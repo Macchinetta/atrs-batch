@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:batch="http://www.springframework.org/schema/batch" xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+             http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+    <import resource="classpath:META-INF/spring/job-base-context.xml" />
+
+    <context:annotation-config />
+    <context:component-scan
+        base-package="jp.co.ntt.atrs.batch.jbba01001,jp.co.ntt.atrs.batch.common.listener" />
+
+    <!-- DAO設定 -->
+    <bean id="JBBA01001BatchDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface"
+            value="jp.co.ntt.atrs.batch.jbba01001.JBBA01001BatchDao" />
+        <property name="sqlSessionTemplate" ref="batchModeSqlSessionTemplate" />
+    </bean>
+
+    <bean id="reader"
+        class="org.springframework.batch.item.file.FlatFileItemReader"
+        scope="step" p:resource="file:${user.dir}/${path.FlightUpdate}"
+        p:encoding="UTF-8" p:strict="true">
+        <property name="lineMapper">
+            <bean
+                class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+                <property name="lineTokenizer">
+                    <bean
+                        class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer"
+                        p:names="departureDateStr,flightName,boardingClassCd,fareTypeCd,vacantNumStr"
+                        p:delimiter="," p:quoteCharacter='"' />
+                </property>
+                <property name="fieldSetMapper">
+                    <bean
+                        class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper"
+                        p:targetType="jp.co.ntt.atrs.batch.jbba01001.FlightUpdateDto" />
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <batch:job id="JBBA01001" job-repository="jobRepository">
+        <batch:step id="JBBA01001.step01">
+            <batch:tasklet transaction-manager="jobTransactionManager"
+                ref="JBBA01001Tasklet">
+                <batch:listeners>
+                    <batch:listener ref="atrsExceptionHandlingListener" />
+                </batch:listeners>
+            </batch:tasklet>
+        </batch:step>
+        <batch:listeners>
+            <batch:listener ref="jobExitCodeChangeListener" />
+            <batch:listener ref="jobLoggingListener" />
+        </batch:listeners>
+    </batch:job>
+
+</beans>

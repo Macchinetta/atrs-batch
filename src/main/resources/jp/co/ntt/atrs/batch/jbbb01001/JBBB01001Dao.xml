@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.co.ntt.atrs.batch.jbbb01001.JBBB01001Dao">
+
+    <select id="findReservationByReserveDateList" parameterType="jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto" 
+                                      resultType="jp.co.ntt.atrs.batch.jbbb01001.ReservationResultDto" fetchSize="200">
+        SELECT
+            reservation.reserve_date AS reserveDate,
+            reservation.reserve_no AS reserveNo,
+            reserve_flight.flight_name AS flightName,
+            reserve_flight.departure_date AS departureDate,
+            fare_type.fare_type_name AS fareTypeName,
+            da.airport_name AS depAirport,
+            flight_master.departure_time AS departureTime,
+            aa.airport_name AS arrAirport,
+            flight_master.arrival_time AS arrivalTime,
+            reservation.total_fare AS totalFare
+        FROM
+            reservation
+            JOIN reserve_flight
+                ON reservation.reserve_no = reserve_flight.reserve_no
+            JOIN fare_type
+                ON reserve_flight.fare_type_cd = fare_type.fare_type_cd
+            JOIN flight_master
+                ON reserve_flight.flight_name = flight_master.flight_name
+            JOIN route
+                ON flight_master.route_no = route.route_no
+            JOIN airport da
+                ON route.dep_airport_cd = da.airport_cd
+            JOIN airport aa
+                ON route.arr_airport_cd = aa.airport_cd
+        WHERE
+            reservation.reserve_date BETWEEN #{firstDate} AND #{lastDate}
+        ORDER BY
+            reserve_date,
+            reservation.reserve_no,
+            reserve_flight_no
+    </select>
+
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.co.ntt.atrs.batch.jbbb01003.JBBB01003Dao">
+
+    <select id="findFareTypeAggregationByDepartureDateList" parameterType="jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto" 
+                                     resultType="jp.co.ntt.atrs.batch.jbbb01003.FareTypeAggregationResultDto" fetchSize="200">
+        SELECT
+            flight.departure_date AS departureDate,
+            flight.flight_name AS flightName,
+            fare_type.fare_type_name AS fareTypeName,
+            (
+                SELECT
+                    COUNT(*)
+                FROM
+                    passenger
+                    JOIN reserve_flight
+                        ON passenger.reserve_flight_no = reserve_flight.reserve_flight_no
+                WHERE
+                    reserve_flight.departure_date = flight.departure_date
+                AND
+                    reserve_flight.flight_name = flight.flight_name
+                AND
+                    reserve_flight.fare_type_cd = flight.fare_type_cd
+            ) AS passengerNum
+        FROM
+            flight
+            JOIN fare_type
+                ON flight.fare_type_cd = fare_type.fare_type_cd
+        WHERE
+            departure_date BETWEEN #{firstDate} AND #{lastDate}
+        ORDER BY
+            departure_date,
+            flight_name,
+            display_order
+    </select>
+
+</mapper>

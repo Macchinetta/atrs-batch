@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.co.ntt.atrs.batch.jbba01001.JBBA01001BatchDao">
+
+	<!-- データ挿入 -->
+    <!-- フライト情報テーブル -->
+    <insert id="insertFlight" parameterType="jp.co.ntt.atrs.batch.jbba00.FlightDto">
+        INSERT INTO flight
+            (
+                departure_date,
+                flight_name,
+                boarding_class_cd,
+                fare_type_cd,
+                vacant_num
+            )
+            VALUES
+            (
+                #{departureDate},
+                #{flightName},
+                #{boardingClassCd},
+                #{fareTypeCd},
+                #{vacantNum}
+            )
+    </insert>
+</mapper>

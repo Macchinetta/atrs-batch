@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:batch="http://www.springframework.org/schema/batch"
+  xmlns:p="http://www.springframework.org/schema/p" xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+             http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+             http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+  <import resource="classpath:META-INF/spring/job-base-context.xml" />
+
+  <context:annotation-config />
+  <context:component-scan base-package="jp.co.ntt.atrs.batch.jbba02001,jp.co.ntt.atrs.batch.common.listener" />
+
+  <!-- DAO設定 -->
+  <bean id="JBBA02001Dao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    <property name="mapperInterface" value="jp.co.ntt.atrs.batch.jbba02001.JBBA02001Dao" />
+    <property name="sqlSessionFactory" ref="jobSqlSessionFactory" />
+  </bean>
+
+  <bean id="flightBackupFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter"
+    scope="step" p:resource="file:${user.dir}/${path.FlightBackup}" p:encoding="UTF-8"
+    p:lineSeparator="&#x0A;" p:appendAllowed="true" p:transactional="false">
+    <property name="lineAggregator">
+      <bean class="org.terasoluna.batch.item.file.transform.EnclosableDelimitedLineAggregator"
+        p:delimiter="," p:enclosure='"' p:allEnclosing="true">
+        <property name="fieldExtractor">
+          <bean class="jp.co.ntt.atrs.batch.jbba02001.FlightBackupDtoDateChangeFieldExtractor" />
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="reserveFlightBackupFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter"
+    scope="step" p:resource="file:${user.dir}/${path.ReserveFlightBackup}" p:encoding="UTF-8"
+    p:lineSeparator="&#x0A;" p:appendAllowed="true" p:transactional="false">
+    <property name="lineAggregator">
+      <bean class="org.terasoluna.batch.item.file.transform.EnclosableDelimitedLineAggregator"
+        p:delimiter="," p:enclosure='"' p:allEnclosing="true">
+        <property name="fieldExtractor">
+          <bean class="jp.co.ntt.atrs.batch.jbba02001.ReserveFlightBackupDtoDateChangeFieldExtractor" />
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="passengerBackupFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter"
+    scope="step" p:resource="file:${user.dir}/${path.PassengerBackup}" p:encoding="UTF-8"
+    p:lineSeparator="&#x0A;" p:appendAllowed="true" p:transactional="false">
+    <property name="lineAggregator">
+      <bean class="org.terasoluna.batch.item.file.transform.EnclosableDelimitedLineAggregator"
+        p:delimiter="," p:enclosure='"' p:allEnclosing="true">
+        <property name="fieldExtractor">
+          <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor"
+            p:names="passengerNo,reserveFlightNo,familyName,givenName,age,gender,customerNo" />
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <batch:job id="JBBA02001" job-repository="jobRepository">
+    <batch:step id="JBBA02001.step01">
+      <batch:tasklet transaction-manager="jobTransactionManager" ref="JBBA02001Tasklet">
+        <batch:listeners>
+          <batch:listener ref="atrsExceptionHandlingListener" />
+        </batch:listeners>
+      </batch:tasklet>
+    </batch:step>
+    <batch:listeners>
+      <batch:listener ref="jobExitCodeChangeListener" />
+      <batch:listener ref="jobLoggingListener" />
+    </batch:listeners>
+  </batch:job>
+
+</beans>
+    

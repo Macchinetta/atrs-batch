@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.co.ntt.atrs.batch.jbba02001.JBBA02001Dao">
+
+    <!-- データ抽出 -->
+
+    <!-- 不要フライト情報を取得する -->
+    <select id="findFlightList" parameterType="Date" resultType="jp.co.ntt.atrs.batch.jbba00.FlightDto" fetchSize="200">
+        <![CDATA[
+            SELECT
+                departure_date AS departureDate,
+                flight_name AS flightName,
+                boarding_class_cd AS boardingClassCd,
+                fare_type_cd AS fareTypeCd,
+                vacant_num AS vacantNum
+            FROM
+                flight
+            WHERE
+                departure_date < #{date}
+            ORDER BY
+                departure_date,
+                flight_name,
+                boarding_class_cd,
+                fare_type_cd
+        ]]>
+    </select>
+
+    <!-- 不要予約フライト情報を取得する -->
+    <select id="findReserveFlightList" parameterType="Date" resultType="jp.co.ntt.atrs.batch.jbba02001.ReserveFlightDto" fetchSize="200">
+        <![CDATA[
+            SELECT
+                reserve_flight_no AS reserveFlightNo,
+                reserve_no AS reserveNo,
+                departure_date AS departureDate,
+                flight_name AS flightName,
+                boarding_class_cd AS boardingClassCd,
+                fare_type_cd AS fareTypeCd
+            FROM
+                reserve_flight
+            WHERE
+                departure_date < #{date}
+            ORDER BY
+                departure_date,
+                reserve_flight_no
+        ]]>
+    </select>
+
+    <!-- 不要搭乗者情報を取得する -->
+    <select id="findPassengerList" parameterType="Date" resultType="jp.co.ntt.atrs.batch.jbba02001.PassengerDto" fetchSize="200">
+        <![CDATA[
+            SELECT
+                passenger_no AS passengerNo,
+                passenger.reserve_flight_no AS reserveFlightNo,
+                family_name AS familyName,
+                given_name AS givenName,
+                age AS age,
+                gender AS gender,
+                customer_no AS customerNo
+            FROM
+                passenger
+                JOIN reserve_flight
+                    ON reserve_flight.reserve_flight_no = passenger.reserve_flight_no
+            WHERE
+                reserve_flight.departure_date < #{date}
+            ORDER BY
+                reserve_flight.departure_date,
+                passenger_no
+        ]]>
+    </select>
+
+    <!-- データ削除 -->
+    <!-- 不要フライト情報を削除する -->
+    <delete id="deleteFlight" parameterType="Date">
+        <![CDATA[
+            DELETE
+            FROM
+                flight
+            WHERE
+                departure_date < #{date}
+        ]]>
+    </delete>
+
+    <!-- 不要予約フライト情報を削除する -->
+    <delete id="deleteReserveFlight" parameterType="Date">
+        <![CDATA[
+            DELETE
+            FROM
+                reserve_flight
+            WHERE
+                departure_date < #{date}
+        ]]>
+    </delete>
+
+    <!-- 不要予約フライト情報を削除する -->
+    <delete id="deletePassenger" parameterType="Date">
+        <![CDATA[
+            DELETE
+            FROM
+                passenger
+            USING
+                reserve_flight
+            WHERE
+                reserve_flight.departure_date < #{date}
+            AND
+                reserve_flight.reserve_flight_no = passenger.reserve_flight_no
+        ]]>
+    </delete>
+
+</mapper>
