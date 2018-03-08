@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import jp.co.ntt.atrs.batch.common.logging.LogMessages;
 import java.util.Date;
 
 /**
- * 日付変換に関するユー�?ィリ�?ィクラス�?
+ * 日付変換に関するユーティリティクラス。
  * 
- * @author 電電 次�?
+ * @author 電電 次郎
  */
 public class DateUtil {
     /**
-     * メ�?セージ出力に利用するログ機�?�を提供するインタフェース�?
+     * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
 
@@ -43,10 +43,10 @@ public class DateUtil {
     }
 
     /**
-     * 日付文字�?�をDate型に変換する�?
+     * 日付文字列をDate型に変換する。
      * 
-     * @param dateStr 日付文字�??(yyyyMMdd)
-     * @return 日付文字�?�をDate型に変換した結果
+     * @param dateStr 日付文字列(yyyyMMdd)
+     * @return 日付文字列をDate型に変換した結果
      * @throws IllegalArgumentException 日付変換エラー
      */
     public static Date convertDate(String dateStr) throws IllegalArgumentException {

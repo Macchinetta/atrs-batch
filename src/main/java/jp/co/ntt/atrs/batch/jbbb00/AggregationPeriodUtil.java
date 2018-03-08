@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,37 +27,37 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * �?計期間に関するユー�?ィリ�?ィクラス�?
+ * 集計期間に関するユーティリティクラス。
  * 
- * @author 電電 次�?
+ * @author 電電 次郎
  */
 public class AggregationPeriodUtil {
 
     /**
-     * メ�?セージ出力に利用するログ機�?�を提供するインタフェース�?
+     * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AggregationPeriodUtil.class);
 
     /**
-     * コンストラクタ�?
+     * コンストラクタ。
      */
     private AggregationPeriodUtil() {
         // do nothing.
     }
 
     /**
-     * �?計期間オブジェクトを生�?�する�??
+     * 集計期間オブジェクトを生成する。
      * 
-     * @param firstDateStr �?計開始日(yyyyMMddの日付文字�??)
-     * @param lastDateStr �?計終�?日(yyyyMMddの日付文字�??)
-     * @return �?計期間�?�引数が日付に変換できな�?場合�?�また�?��?計可能期間�?でな�?場合�?�null�?
+     * @param firstDateStr 集計開始日(yyyyMMddの日付文字列)
+     * @param lastDateStr 集計終了日(yyyyMMddの日付文字列)
+     * @return 集計期間。引数が日付に変換できない場合、または集計可能期間内でない場合はnull。
      */
     public static AggregationPeriodDto create(String firstDateStr, String lastDateStr) {
 
         Date firstDate = null;
         Date lastDate = null;
         try {
-            // 日付文字�?�をDate型に変換
+            // 日付文字列をDate型に変換
             firstDate = DateUtil.convertDate(firstDateStr);
             lastDate = DateUtil.convertDate(lastDateStr);
         } catch (IllegalArgumentException e) {
@@ -66,7 +66,7 @@ public class AggregationPeriodUtil {
             return null;
         }
 
-        // �?計可能期間であるか�?�チェ�?ク�?
+        // 集計可能期間であるかのチェック。
         if (check(firstDate, lastDate)) {
             return new AggregationPeriodDto(firstDate, lastDate);
         }
@@ -75,27 +75,27 @@ public class AggregationPeriodUtil {
     }
 
     /**
-     * �?計期間が�?計可能期間であるかを判定する�??
+     * 集計期間が集計可能期間であるかを判定する。
      * 
-     * @param firstDate �?計開始日
-     * @param lastDate �?計終�?日
+     * @param firstDate 集計開始日
+     * @param lastDate 集計終了日
      * @return 判定結果
      */
     private static boolean check(Date firstDate, Date lastDate) {
 
-        // �?計開始日、終�?日のInterval作�??
+        // 集計開始日、終了日のInterval作成
         DateTime firstDateTime = new DateTime(firstDate);
         DateTime lastDateTime = new DateTime(lastDate);
         Interval interval = null;
         try {
             interval = new Interval(firstDateTime, lastDateTime);
         } catch (IllegalArgumentException e) {
-            // 日付チェ�?クエラー
+            // 日付チェックエラー
             LOGGER.error(LogMessages.E_AR_BB01_L8001.getMessage(), e);
             return false;
         }
 
-        // 参�?�可能期間の作�??
+        // 参照可能期間の作成
         DateTime currentDate = new DateTime().withTimeAtStartOfDay();
         DateTime firstFindAvailableDate = currentDate.minusMonths(1).dayOfMonth().withMinimumValue();
         DateTime lastFindAvailableDate = currentDate.plusMillis(1);
@@ -104,7 +104,7 @@ public class AggregationPeriodUtil {
         if (findAvailableInterval.contains(interval)) {
             return true;
         }
-        // 日付チェ�?クエラー
+        // 日付チェックエラー
         LOGGER.error(LogMessages.E_AR_BB01_L8001.getMessage());
         return false;
     }

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.atrs.batch</groupId>
     <artifactId>atrs-batch</artifactId>
-    <version>2.0.0.RELEASE</version>
+    <version>2.0.1.RELEASE</version>
 
     <name>${project.artifactId}</name>
     <description>ATRS Batch Project using Macchinetta Batch Framework (2.x)</description>
@@ -48,14 +48,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <io.spring.platform.version>Brussels-SR5</io.spring.platform.version>
-        <terasoluna-batch.version>5.1.0.RELEASE</terasoluna-batch.version>
+        <spring-framework-bom.version>4.3.14.RELEASE</spring-framework-bom.version>
+        <terasoluna-batch.version>5.1.1.RELEASE</terasoluna-batch.version>
 
         <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
-
-        <com.google.code.maven-license-plugin.version>1.4.0</com.google.code.maven-license-plugin.version>
         
+        <com.google.code.maven-license-plugin.version>1.4.0</com.google.code.maven-license-plugin.version>
+
         <dozer.version>5.5.1</dozer.version>
         <org.codehaus.mojo.sql-maven-plugin.version>1.5</org.codehaus.mojo.sql-maven-plugin.version>
         <postgresql.version>9.4.1212.jre7</postgresql.version>
@@ -63,6 +64,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring-framework-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>io.spring.platform</groupId>
                 <artifactId>platform-bom</artifactId>
@@ -221,13 +229,13 @@
                 <version>${com.google.code.maven-license-plugin.version}</version>
                 <configuration>
                     <header>${project.basedir}/license/header.txt</header>
-                   <includes>
-                       <include>src/**/*.java</include>
-                   </includes>
-                   <encoding>${encoding}</encoding>
-                   <headerDefinitions>
-                       <headerDefinition>${project.basedir}/license/header-definition.xml</headerDefinition>
-                   </headerDefinitions>
+                    <includes>
+                        <include>src/**/*.java</include>
+                    </includes>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <headerDefinitions>
+                        <headerDefinition>${project.basedir}/license/header-definition.xml</headerDefinition>
+                    </headerDefinitions>
                 </configuration>
             </plugin>
             <plugin>

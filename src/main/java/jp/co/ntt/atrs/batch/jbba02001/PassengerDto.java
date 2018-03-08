@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,26 +28,26 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * 搭乗�??�?報�?ーブルオブジェクト�??
+ * 搭乗者情報テーブルオブジェクト。
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 public class PassengerDto {
 
     /**
-     * 搭乗�??番号�?
+     * 搭乗者番号。
      */
     @NotNull
     private Integer passengerNo;
 
     /**
-     * 予�?フライト番号�?
+     * 予約フライト番号。
      */
     @NotNull
     private Integer reserveFlightNo;
 
     /**
-     * 姓�??
+     * 姓。
      */
     @NotNull
     @FullWidthKatakana
@@ -55,7 +55,7 @@ public class PassengerDto {
     private String familyName;
 
     /**
-     * 名�??
+     * 名。
      */
     @NotNull
     @FullWidthKatakana
@@ -63,13 +63,13 @@ public class PassengerDto {
     private String givenName;
 
     /**
-     * 年齢�?
+     * 年齢。
      */
     @NotNull
     private Integer age;
 
     /**
-     * 性別�?
+     * 性別。
      */
     @NotNull
     @HalfWidthAlpha
@@ -77,86 +77,86 @@ public class PassengerDto {
     private String gender;
 
     /**
-     * お客様番号�?
+     * お客様番号。
      */
     @HalfWidthNumber
     @FixedLength(10)
     private String customerNo;
 
     /**
-     * 搭乗�??番号 を取得する�??
+     * 搭乗者番号 を取得する。
      * 
-     * @return 搭乗�??番号
+     * @return 搭乗者番号
      */
     public Integer getPassengerNo() {
         return passengerNo;
     }
 
     /**
-     * 搭乗�??番号 を設定する�??
+     * 搭乗者番号 を設定する。
      * 
-     * @param passengerNo 搭乗�??番号
+     * @param passengerNo 搭乗者番号
      */
     public void setPassengerNo(Integer passengerNo) {
         this.passengerNo = passengerNo;
     }
 
     /**
-     * 予�?フライト番号 を取得する�??
+     * 予約フライト番号 を取得する。
      * 
-     * @return 予�?フライト番号
+     * @return 予約フライト番号
      */
     public Integer getReserveFlightNo() {
         return reserveFlightNo;
     }
 
     /**
-     * 予�?フライト番号 を設定する�??
+     * 予約フライト番号 を設定する。
      * 
-     * @param reserveFlightNo 予�?フライト番号
+     * @param reserveFlightNo 予約フライト番号
      */
     public void setReserveFlightNo(Integer reserveFlightNo) {
         this.reserveFlightNo = reserveFlightNo;
     }
 
     /**
-     * �? を取得する�??
+     * 姓 を取得する。
      * 
-     * @return �?
+     * @return 姓
      */
     public String getFamilyName() {
         return familyName;
     }
 
     /**
-     * �? を設定する�??
+     * 姓 を設定する。
      * 
-     * @param familyName �?
+     * @param familyName 姓
      */
     public void setFamilyName(String familyName) {
         this.familyName = familyName;
     }
 
     /**
-     * �? を取得する�??
+     * 名 を取得する。
      * 
-     * @return �?
+     * @return 名
      */
     public String getGivenName() {
         return givenName;
     }
 
     /**
-     * �? を設定する�??
+     * 名 を設定する。
      * 
-     * @param givenName �?
+     * @param givenName 名
      */
     public void setGivenName(String givenName) {
         this.givenName = givenName;
     }
 
     /**
-     * 年齢 を取得する�??
+     * 年齢 を取得する。
      * 
      * @return 年齢
      */
@@ -165,7 +165,7 @@ public class PassengerDto {
     }
 
     /**
-     * 年齢 を設定する�??
+     * 年齢 を設定する。
      * 
      * @param age 年齢
      */
@@ -174,7 +174,7 @@ public class PassengerDto {
     }
 
     /**
-     * 性別 を取得する�??
+     * 性別 を取得する。
      * 
      * @return 性別
      */
@@ -183,7 +183,7 @@ public class PassengerDto {
     }
 
     /**
-     * 性別 を設定する�??
+     * 性別 を設定する。
      * 
      * @param gender 性別
      */
@@ -192,7 +192,7 @@ public class PassengerDto {
     }
 
     /**
-     * お客様番号 を取得する�??
+     * お客様番号 を取得する。
      * 
      * @return お客様番号
      */
@@ -201,7 +201,7 @@ public class PassengerDto {
     }
 
     /**
-     * お客様番号 を設定する�??
+     * お客様番号 を設定する。
      * 
      * @param customerNo お客様番号
      */

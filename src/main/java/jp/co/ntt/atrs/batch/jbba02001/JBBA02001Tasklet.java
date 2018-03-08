@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,92 +53,92 @@ import java.text.MessageFormat;
 import javax.inject.Inject;
 
 /**
- * 不要なフライト情報をフライト情報バックア�?プファイルに出力し、DBの不要なフライト情報を削除する�?
+ * 不要なフライト情報をフライト情報バックアップファイルに出力し、DBの不要なフライト情報を削除する。
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 @Component("JBBA02001Tasklet")
 @Scope("step")
 public class JBBA02001Tasklet implements Tasklet {
     /**
-     * メ�?セージ出力に利用するログ機�?�を提供するインタフェース�?
+     * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(JBBA02001Tasklet.class);
 
     /**
-     * フライト情報入力チェ�?ク用のバリ�?ータ�?
+     * フライト情報入力チェック用のバリデータ。
      */
     @Inject
     Validator<FlightDto> flightDtoValidator;
 
     /**
-     * 予�?フライト情報入力チェ�?ク用のバリ�?ータ�?
+     * 予約フライト情報入力チェック用のバリデータ。
      */
     @Inject
     Validator<ReserveFlightDto> reserveFlightDtoValidator;
 
     /**
-     * 搭乗�??�?報入力チェ�?ク用のバリ�?ータ�?
+     * 搭乗者情報入力チェック用のバリデータ。
      */
     @Inject
     Validator<PassengerDto> passengerDtoValidator;
 
     /**
-     * メ�?セージ管�?機�?��?
+     * メッセージ管理機能。
      */
     @Inject
     MessageSource messageSource;
 
     /**
-     * フライト情報バックア�?プファイル操作機�?�で提供する�?��?のインターフェース�?
+     * フライト情報バックアップファイル操作機能で提供する処理のインターフェース。
      */
     @Inject
     ItemStreamWriter<FlightBackupDto> flightBackupFileWriter;
 
     /**
-     * 予�?フライト情報バックア�?プファイル操作機�?�で提供する�?��?のインターフェース�?
+     * 予約フライト情報バックアップファイル操作機能で提供する処理のインターフェース。
      */
     @Inject
     ItemStreamWriter<PassengerBackupDto> passengerBackupFileWriter;
 
     /**
-     * 搭乗�??�?報バックア�?プファイル操作機�?�で提供する�?��?のインターフェース�?
+     * 搭乗者情報バックアップファイル操作機能で提供する処理のインターフェース。
      */
     @Inject
     ItemStreamWriter<ReserveFlightBackupDto> reserveFlightBackupFileWriter;
 
     /**
-     * フライト情報�?避DAOインタフェース�?
+     * フライト情報退避DAOインタフェース。
      */
     @Inject
     JBBA02001Dao dao;
 
     /**
-     * Beanマッパ�?��?
+     * Beanマッパー。
      */
     @Inject
     Mapper beanMapper;
 
     /**
-     * ユーザーの現在の作業�?ィレクトリ
+     * ユーザーの現在の作業ディレクトリ
      */
     @Value("${user.dir}")
     private String userDir;
 
     /**
-     * フライト情報バックア�?プファイルパス
+     * フライト情報バックアップファイルパス
      */
     @Value("${path.FlightBackup}")
     private String PATH_FLIGHT_BACKUP;
 
     /**
-     * 予�?フライト情報バックア�?プファイルパス
+     * 予約フライト情報バックアップファイルパス
      */
     @Value("${path.ReserveFlightBackup}")
     private String PATH_RESERVE_FLIGHT_BACKUP;
 
     /**
-     * 搭乗�??�?報バックア�?プファイルパス
+     * 搭乗者情報バックアップファイルパス
      */
     @Value("${path.PassengerBackup}")
     private String PATH_PASSENGER_BACKUP;
@@ -146,78 +146,78 @@ public class JBBA02001Tasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        // シス�?�?日時を取得し、日�?"01"、時間を"00:00:00"に変更した日時をバッチ�?��?日時として保持
+        // システム日時を取得し、日を"01"、時間を"00:00:00"に変更した日時をバッチ処理日時として保持
         final Calendar calendar = Calendar.getInstance();
         calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 1, 0, 0, 0);
 
-        // �?避を実施した年�?
+        // 退避を実施した年月
         final String fileYYYYMM = new LocalDate(calendar.getTime()).toString("yyyyMM");
 
-        // バッチ�?��?日時か�?1か月さかのぼった日時を�?避処�?日時として保持
+        // バッチ処理日時から1か月さかのぼった日時を退避処理日時として保持
         calendar.add(Calendar.MONTH, -1);
         final Date paramDate = calendar.getTime();
 
-        // バックア�?プファイルのパスを取�?
+        // バックアップファイルのパスを取得
         Path flightBackupFile = Paths.get(userDir, PATH_FLIGHT_BACKUP);
         Path reserveFlightBackupFile = Paths.get(userDir, PATH_RESERVE_FLIGHT_BACKUP);
         Path passengerBackupFile = Paths.get(userDir, PATH_PASSENGER_BACKUP);
 
-        // リネ�?��?ファイル
+        // リネームファイル
         String renameFlightBackupFile = MessageFormat.format(flightBackupFile.toString(), fileYYYYMM);
         String renameReserveFlightBackupFile = MessageFormat.format(reserveFlightBackupFile.toString(), fileYYYYMM);
         String renamePassengerBackupFile = MessageFormat.format(passengerBackupFile.toString(), fileYYYYMM);
 
-        // 正常終�?フラグ?�?false?��異常?�?
+        // 正常終了フラグ（false：異常）
         boolean normalEndFlg = false;
 
         try {
-            // フライト情報のバックア�?プ�?��?
+            // フライト情報のバックアップ処理
             int flightBackupCnt = backupFlightDb(paramDate, flightBackupFile.toString(), renameFlightBackupFile,
                     chunkContext);
 
             if (flightBackupCnt == 0) {
-                // �?避対象のフライト情報無し�?10:警告終�??�?
+                // 退避対象のフライト情報無し（10:警告終了）
                 LOGGER.warn(LogMessages.W_AR_BA02_L8001.getMessage());
                 contribution.setExitStatus(new ExitStatus("WARNING"));
                 return RepeatStatus.FINISHED;
             }
 
-            // フライト情報の出力�?�ファイルとファイル出力件数をログに出�?
+            // フライト情報の出力先ファイルとファイル出力件数をログに出力
             LOGGER.info(LogMessages.I_AR_FW_L0003.getMessage(renameFlightBackupFile, String.valueOf(flightBackupCnt)));
 
-            // 予�?フライト情報のバックア�?プ�?��?
+            // 予約フライト情報のバックアップ処理
             int reserveFlightBackupCnt = backupReserveFlightDb(paramDate, reserveFlightBackupFile.toString(),
                     renameReserveFlightBackupFile, chunkContext);
 
-            // 予�?フライト情報の出力�?�ファイルとファイル出力件数をログに出�?
+            // 予約フライト情報の出力先ファイルとファイル出力件数をログに出力
             LOGGER.info(LogMessages.I_AR_FW_L0003.getMessage(renameReserveFlightBackupFile,
                     String.valueOf(reserveFlightBackupCnt)));
 
-            // 搭乗�??�?報のバックア�?プ�?��?
+            // 搭乗者情報のバックアップ処理
             int passengerBackupCnt = backupPassengerDb(paramDate, passengerBackupFile.toString(),
                     renamePassengerBackupFile, chunkContext);
 
-            // 搭乗�??�?報の出力�?�ファイルとファイル出力件数をログに出�?
+            // 搭乗者情報の出力先ファイルとファイル出力件数をログに出力
             LOGGER.info(LogMessages.I_AR_FW_L0003.getMessage(renamePassengerBackupFile,
                     String.valueOf(passengerBackupCnt)));
 
-            // 搭乗�??�?報のDB削除と削除件数ログ出�?
+            // 搭乗者情報のDB削除と削除件数ログ出力
             int passengerDelCnt = dao.deletePassenger(paramDate);
 
-            LOGGER.info(LogMessages.I_AR_BA02_L0001.getMessage("搭乗�??�?報", String.valueOf(passengerDelCnt)));
+            LOGGER.info(LogMessages.I_AR_BA02_L0001.getMessage("搭乗者情報", String.valueOf(passengerDelCnt)));
 
-            // 予�?フライト情報のDB削除と削除件数ログ出�?
+            // 予約フライト情報のDB削除と削除件数ログ出力
             final int reserveFlightDelCnt = dao.deleteReserveFlight(paramDate);
-            LOGGER.info(LogMessages.I_AR_BA02_L0001.getMessage("予�?フライト情報", String.valueOf(reserveFlightDelCnt)));
+            LOGGER.info(LogMessages.I_AR_BA02_L0001.getMessage("予約フライト情報", String.valueOf(reserveFlightDelCnt)));
 
-            // フライト情報のDB削除と削除件数ログ出�?
+            // フライト情報のDB削除と削除件数ログ出力
             final int flightDelCnt = dao.deleteFlight(paramDate);
             LOGGER.info(LogMessages.I_AR_BA02_L0001.getMessage("フライト情報", String.valueOf(flightDelCnt)));
 
-            // 正常終�?フラグ?�?true?��正常?�?
+            // 正常終了フラグ（true：正常）
             normalEndFlg = true;
         } finally {
-            // エラー発生によるロールバックの場合�?�バックア�?プファイルを削除
+            // エラー発生によるロールバックの場合はバックアップファイルを削除
             if (!normalEndFlg) {
                 deleteFile(Paths.get(renameFlightBackupFile));
                 deleteFile(Paths.get(renameReserveFlightBackupFile));
@@ -225,19 +225,19 @@ public class JBBA02001Tasklet implements Tasklet {
             }
         }
 
-        // ジョブ終�?コード�?0:正常終�??�?
+        // ジョブ終了コード（0:正常終了）
         contribution.setExitStatus(new ExitStatus("NORMAL"));
         return RepeatStatus.FINISHED;
     }
 
     /**
-     * フライト情報DB�?ータのバックア�?プ�?��?�?
+     * フライト情報DBデータのバックアップ処理。
      * 
-     * @param paramDate �?避処�?日�?
-     * @param fileName バックア�?プファイルのファイル�?(リネ�?��?�?)
-     * @param newFileName バックア�?プファイルのファイル�?(リネ�?��?�?)
+     * @param paramDate 退避処理日時
+     * @param fileName バックアップファイルのファイル名(リネーム前)
+     * @param newFileName バックアップファイルのファイル名(リネーム後)
      * @param chunkContext ファイル入出力パラメータ
-     * @return バックア�?プ件数
+     * @return バックアップ件数
      * @throws AtrsBatchException
      */
     private int backupFlightDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
@@ -249,29 +249,29 @@ public class JBBA02001Tasklet implements Tasklet {
             // ファイルオープン
             flightBackupFileWriter.open(chunkContext.getStepContext().getStepExecution().getExecutionContext());
 
-            // DBから�?ータ取�?
+            // DBからデータ取得
             List<FlightDto> dbData = dao.findFlightList(paramDate);
 
-            // DBから�?ータを取�?
+            // DBからデータを取得
             for (FlightDto inputdata : dbData) {
-                // 入力チェ�?クエラーハンドリング
+                // 入力チェックエラーハンドリング
                 try {
                     flightDtoValidator.validate(inputdata);
                 } catch (ValidationException e) {
-                    // FieldErrorsの個数�?、以下�?�処�?を繰り返す
+                    // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェ�?クエラーメ�?セージを�?��?
+                        // 入力チェックエラーメッセージを出力
                         LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
                                 + "]" + "(" + inputdata.toString() + ")");
                     }
-                    // 入力チェ�?クエラー
+                    // 入力チェックエラー
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
                     throw new AtrsBatchException(e);
                 }
-                // DTOの詰め替え�?��?
+                // DTOの詰め替え処理
                 FlightBackupDto printData = beanMapper.map(inputdata, FlightBackupDto.class);
 
-                // バックア�?プファイルへの書込み
+                // バックアップファイルへの書込み
                 try {
                     flightBackupFileWriter.write(Arrays.asList(printData));
                 } catch (Exception e) {
@@ -292,18 +292,18 @@ public class JBBA02001Tasklet implements Tasklet {
                 // ファイルクローズ
                 flightBackupFileWriter.close();
             } catch (ItemStreamException e) {
-                // クローズ失�?
+                // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失�?", e);
+                    LOGGER.debug("クローズ失敗", e);
                 }
             }
         }
         
         try {
-            // リネ�?��?
+            // リネーム
             Files.move(Paths.get(fileName), Paths.get(newFileName));
         } catch (IOException e) {
-            // リネ�?��?失�?
+            // リネーム失敗
             LOGGER.error(LogMessages.E_AR_FW_L9009.getMessage(fileName, newFileName), e);
             throw new AtrsBatchException(e);
         }
@@ -312,13 +312,13 @@ public class JBBA02001Tasklet implements Tasklet {
     }
 
     /**
-     * 予�?フライト情報DB�?ータのバックア�?プ�?��?�?
+     * 予約フライト情報DBデータのバックアップ処理。
      * 
-     * @param paramDate �?避処�?日�?
-     * @param fileName バックア�?プファイルのファイル�?(リネ�?��?�?)
-     * @param newFileName バックア�?プファイルのファイル�?(リネ�?��?�?)
+     * @param paramDate 退避処理日時
+     * @param fileName バックアップファイルのファイル名(リネーム前)
+     * @param newFileName バックアップファイルのファイル名(リネーム後)
      * @param chunkContext ファイル入出力パラメータ
-     * @return バックア�?プ件数
+     * @return バックアップ件数
      * @throws AtrsBatchException
      */
     private int backupReserveFlightDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
@@ -330,30 +330,30 @@ public class JBBA02001Tasklet implements Tasklet {
             // ファイルオープン
             reserveFlightBackupFileWriter.open(chunkContext.getStepContext().getStepExecution().getExecutionContext());
 
-            // DBから�?ータ取�?
+            // DBからデータ取得
             List<ReserveFlightDto> dbData = dao.findReserveFlightList(paramDate);
 
-            // 次要�?に�?ータが存在するまで処�?を繰り返す
+            // 次要素にデータが存在するまで処理を繰り返す
             for (ReserveFlightDto inputdata : dbData) {
-                // 入力チェ�?クエラーハンドリング
+                // 入力チェックエラーハンドリング
                 try {
                     reserveFlightDtoValidator.validate(inputdata);
                 } catch (ValidationException e) {
-                    // FieldErrorsの個数�?、以下�?�処�?を繰り返す
+                    // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェ�?クエラーメ�?セージを�?��?
+                        // 入力チェックエラーメッセージを出力
                         LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
                                 + "]" + "(" + inputdata.toString() + ")");
                     }
 
-                    // 入力チェ�?クエラー
+                    // 入力チェックエラー
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
                     throw new AtrsBatchException(e);
                 }
-                // DTOの詰め替え�?��?
+                // DTOの詰め替え処理
                 ReserveFlightBackupDto printData = beanMapper.map(inputdata, ReserveFlightBackupDto.class);
 
-                // バックア�?プファイルへの書込み
+                // バックアップファイルへの書込み
                 try {
                     reserveFlightBackupFileWriter.write(Arrays.asList(printData));
                 } catch (Exception e) {
@@ -374,18 +374,18 @@ public class JBBA02001Tasklet implements Tasklet {
                 // ファイルクローズ
                 reserveFlightBackupFileWriter.close();
             } catch (ItemStreamException e) {
-                // クローズ失�?
+                // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失�?", e);
+                    LOGGER.debug("クローズ失敗", e);
                 }
             }
         }
         
         try {
-            // リネ�?��?
+            // リネーム
             Files.move(Paths.get(fileName), Paths.get(newFileName));
         } catch (IOException e) {
-            // リネ�?��?失�?
+            // リネーム失敗
             LOGGER.error(LogMessages.E_AR_FW_L9009.getMessage(fileName, newFileName), e);
             throw new AtrsBatchException(e);
         }
@@ -394,13 +394,13 @@ public class JBBA02001Tasklet implements Tasklet {
     }
 
     /**
-     * 搭乗�??�?報DB�?ータのバックア�?プ�?��?�?
+     * 搭乗者情報DBデータのバックアップ処理。
      * 
-     * @param paramDate �?避処�?日�?
-     * @param fileName バックア�?プファイルのファイル�?(リネ�?��?�?)
-     * @param newFileName バックア�?プファイルのファイル�?(リネ�?��?�?)
+     * @param paramDate 退避処理日時
+     * @param fileName バックアップファイルのファイル名(リネーム前)
+     * @param newFileName バックアップファイルのファイル名(リネーム後)
      * @param chunkContext ファイル入出力パラメータ
-     * @return バックア�?プ件数
+     * @return バックアップ件数
      * @throws AtrsBatchException
      */
     private int backupPassengerDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
@@ -412,31 +412,31 @@ public class JBBA02001Tasklet implements Tasklet {
             // ファイルオープン
             passengerBackupFileWriter.open(chunkContext.getStepContext().getStepExecution().getExecutionContext());
 
-            // DBから�?ータ取�?
+            // DBからデータ取得
             List<PassengerDto> dbData = dao.findPassengerList(paramDate);
 
-            // 次要�?に�?ータが存在するまで処�?を繰り返す
+            // 次要素にデータが存在するまで処理を繰り返す
             for (PassengerDto inputdata : dbData) {
-                // 入力チェ�?クエラーハンドリング
+                // 入力チェックエラーハンドリング
                 try {
                     passengerDtoValidator.validate(inputdata);
                 } catch (ValidationException e) {
-                    // FieldErrorsの個数�?、以下�?�処�?を繰り返す
+                    // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェ�?クエラーメ�?セージを�?��?
+                        // 入力チェックエラーメッセージを出力
                         LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
                                 + "]" + "(" + inputdata.toString() + ")");
                     }
 
-                    // 入力チェ�?クエラー
+                    // 入力チェックエラー
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
                     throw new AtrsBatchException(e);
                 }
 
-                // DTOの詰め替え�?��?
+                // DTOの詰め替え処理
                 PassengerBackupDto printData = beanMapper.map(inputdata, PassengerBackupDto.class);
 
-                // バックア�?プファイルへの書込み
+                // バックアップファイルへの書込み
                 try {
                     passengerBackupFileWriter.write(Arrays.asList(printData));
                 } catch (Exception e) {
@@ -457,18 +457,18 @@ public class JBBA02001Tasklet implements Tasklet {
                 // ファイルクローズ
                 passengerBackupFileWriter.close();
             } catch (ItemStreamException e) {
-                // クローズ失�?
+                // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失�?", e);
+                    LOGGER.debug("クローズ失敗", e);
                 }
             }
         }
         
         try {
-            // リネ�?��?
+            // リネーム
             Files.move(Paths.get(fileName), Paths.get(newFileName));
         } catch (IOException e) {
-            // リネ�?��?失�?
+            // リネーム失敗
             LOGGER.error(LogMessages.E_AR_FW_L9009.getMessage(fileName, newFileName), e);
             throw new AtrsBatchException(e);
         }
@@ -477,19 +477,19 @@ public class JBBA02001Tasklet implements Tasklet {
     }
 
     /**
-     * バックア�?プファイル削除�?
+     * バックアップファイル削除。
      * 
-     * @param fileName バックア�?プファイルのファイル�?
+     * @param fileName バックアップファイルのファイル名
      */
     private void deleteFile(Path fileName) {
-        // バックア�?プファイルの存在チェ�?ク
+        // バックアップファイルの存在チェック
         if (Files.exists(fileName)) {
             try {
-                // バックア�?プファイルの削除
+                // バックアップファイルの削除
                 Files.delete(fileName);
 
             } catch (IOException e) {
-                // バックア�?プファイルの削除に失�?
+                // バックアップファイルの削除に失敗
                 LOGGER.error(LogMessages.E_AR_FW_L9004.getMessage(fileName), e);
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class WriteHeaderFlatFileHeaderCallback implements FlatFileHeaderCallback
     @Override
     public void writeHeader(Writer writer) throws IOException {
 
-        writer.write("\"搭乗日\",\"出発空港\",\"到�?空港\",\"搭乗�??数\",\"搭乗率\"");
+        writer.write("\"搭乗日\",\"出発空港\",\"到着空港\",\"搭乗者数\",\"搭乗率\"");
 
     }
 

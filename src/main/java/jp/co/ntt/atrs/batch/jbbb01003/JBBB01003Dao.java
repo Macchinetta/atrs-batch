@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package jp.co.ntt.atrs.batch.jbbb01003;
 import java.util.List;
 
 /**
- * 運�?種別搭乗�??�?報�?計ジョブで使用するDAOインターフェース�?
+ * 運賃種別搭乗者情報集計ジョブで使用するDAOインターフェース。
  * 
- * @author NTT 電電次�?
+ * @author NTT 電電次郎
  */
 public interface JBBB01003Dao {
 
     /**
-     * 運�?種別搭乗�??�?報を取得する�??
+     * 運賃種別搭乗者情報を取得する。
      * 
      * @param object パラメータ
      */

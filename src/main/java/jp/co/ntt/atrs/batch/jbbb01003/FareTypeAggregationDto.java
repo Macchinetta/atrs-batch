@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,34 +22,34 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.Date;
 
 /**
- * 運�?種別搭乗�??�?報�?計オブジェクト�??
+ * 運賃種別搭乗者情報集計オブジェクト。
  * 
- * @author 電電次�?
+ * @author 電電次郎
  */
 public class FareTypeAggregationDto {
 
     /**
-     * 搭乗日�?
+     * 搭乗日。
      */
     private Date departureDate;
 
     /**
-     * 便名�??
+     * 便名。
      */
     private String flightName;
 
     /**
-     * 運�?種別名�??
+     * 運賃種別名。
      */
     private String fareTypeName;
 
     /**
-     * 搭乗�??数�?
+     * 搭乗者数。
      */
     private int passengerNum;
 
     /**
-     * 搭乗日を取得する�??
+     * 搭乗日を取得する。
      * 
      * @return 搭乗日
      */
@@ -58,7 +58,7 @@ public class FareTypeAggregationDto {
     }
 
     /**
-     * 搭乗日を設定する�??
+     * 搭乗日を設定する。
      * 
      * @param departureDate 搭乗日
      */
@@ -67,54 +67,54 @@ public class FareTypeAggregationDto {
     }
 
     /**
-     * 便名を取得する�??
+     * 便名を取得する。
      * 
-     * @return 便�?
+     * @return 便名
      */
     public String getFlightName() {
         return flightName;
     }
 
     /**
-     * 便名を設定する�??
+     * 便名を設定する。
      * 
-     * @param flightName 便�?
+     * @param flightName 便名
      */
     public void setFlightName(String flightName) {
         this.flightName = flightName;
     }
 
     /**
-     * 運�?種別名を取得する�??
+     * 運賃種別名を取得する。
      * 
-     * @return 運�?種別�?
+     * @return 運賃種別名
      */
     public String getFareTypeName() {
         return fareTypeName;
     }
 
     /**
-     * 運�?種別名を設定する�??
+     * 運賃種別名を設定する。
      * 
-     * @param fareTypeName 運�?種別�?
+     * @param fareTypeName 運賃種別名
      */
     public void setFareTypeName(String fareTypeName) {
         this.fareTypeName = fareTypeName;
     }
 
     /**
-     * 搭乗�??数を取得する�??.
+     * 搭乗者数を取得する。.
      * 
-     * @return 搭乗�??数
+     * @return 搭乗者数
      */
     public int getPassengerNum() {
         return passengerNum;
     }
 
     /**
-     * 搭乗�??数を設定する�??
+     * 搭乗者数を設定する。
      * 
-     * @param passengerNum 搭乗�??数
+     * @param passengerNum 搭乗者数
      */
     public void setPassengerNum(int passengerNum) {
         this.passengerNum = passengerNum;

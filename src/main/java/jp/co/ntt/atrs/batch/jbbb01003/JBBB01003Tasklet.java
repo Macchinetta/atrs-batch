@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,68 +47,68 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**
- * �?計期間�??の運�?種別搭乗�??�?報をCSVファイルに出力する�??
+ * 集計期間内の運賃種別搭乗者情報をCSVファイルに出力する。
  * 
- * @author 電電次�?
+ * @author 電電次郎
  */
 @Component("JBBB01003Tasklet")
 @Scope("step")
 public class JBBB01003Tasklet implements Tasklet {
     /**
-     * メ�?セージ出力に利用するログ機�?�を提供するインタフェース�?
+     * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(JBBB01003Tasklet.class);
 
     /**
-     * 入力チェ�?ク用のバリ�?ータ�?
+     * 入力チェック用のバリデータ。
      */
     @Inject
     Validator<FareTypeAggregationResultDto> validator;
 
     /**
-     * メ�?セージ管�?機�?��?
+     * メッセージ管理機能。
      */
     @Inject
     MessageSource messageSource;
 
     /**
-     * バックア�?プファイル操作機�?�で提供する�?��?のインターフェース�?
+     * バックアップファイル操作機能で提供する処理のインターフェース。
      */
     @Inject
     ItemStreamWriter<FareTypeAggregationDto> fareTypeAggregationWriter;
 
     /**
-     * 運�?種別搭乗�??�?報�?�?DAOインタフェース�?
+     * 運賃種別搭乗者情報集計DAOインタフェース。
      */
     @Inject
     JBBB01003Dao dao;
 
     /**
-     * Beanマッパ�?��?
+     * Beanマッパー。
      */
     @Inject
     Mapper beanMapper;
 
     /**
-     * ジョブパラメータ �?計開始日
+     * ジョブパラメータ 集計開始日
      */
     @Value("#{jobParameters['firstDateStr']}")
     private String firstDateStr;
 
     /**
-     * ジョブパラメータ �?計終�?日
+     * ジョブパラメータ 集計終了日
      */
     @Value("#{jobParameters['lastDateStr']}")
     private String lastDateStr;
 
     /**
-     * ユーザーの現在の作業�?ィレクトリ
+     * ユーザーの現在の作業ディレクトリ
      */
     @Value("${user.dir}")
     private String userDir;
 
     /**
-     * 運�?種別搭乗�??�?計結果ファイルパス�?
+     * 運賃種別搭乗者集計結果ファイルパス。
      */
     @Value("${path.FareTypeAggregationData}")
     private String PATH_FARETYPE_AGGREGATION_DATA;
@@ -116,15 +116,15 @@ public class JBBB01003Tasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        // 出力ファイルパスの取�?
+        // 出力ファイルパスの取得
         String outputFilePath = new File(userDir, PATH_FARETYPE_AGGREGATION_DATA).getPath();
 
         int outputLineCount = 0;
 
-        // �?計期間�?�取得�?�設�?
+        // 集計期間の取得・設定
         AggregationPeriodDto aggregationPeriod = AggregationPeriodUtil.create(firstDateStr, lastDateStr);
         if (aggregationPeriod == null) {
-            // ジョブ終�?コード�?100:異常終�??�?
+            // ジョブ終了コード（100:異常終了）
             contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
             return RepeatStatus.FINISHED;
         }
@@ -133,49 +133,49 @@ public class JBBB01003Tasklet implements Tasklet {
             // ファイルオープン
             fareTypeAggregationWriter.open(chunkContext.getStepContext().getStepExecution().getExecutionContext());
 
-            // DBから�?ータを取�?
+            // DBからデータを取得
             List<FareTypeAggregationResultDto> items = dao.findFareTypeAggregationByDepartureDateList(aggregationPeriod);
 
             if (items.size() == 0) {
-                // 取得件数�?0件?�?2:正常終�??�?
+                // 取得件数が0件（2:正常終了）
                 LOGGER.warn(LogMessages.W_AR_BB01_L2002.getMessage());
                 contribution.setExitStatus(new ExitStatus("NORMAL_NONE_TARGET"));
                 return RepeatStatus.FINISHED;
             }
 
-            // 次要�?に�?ータが存在するまで処�?を繰り返す
+            // 次要素にデータが存在するまで処理を繰り返す
             for (FareTypeAggregationResultDto inputData : items) {
                 try {
-                    // 入力チェ�?ク
+                    // 入力チェック
                     validator.validate(inputData);
                 } catch (ValidationException e) {
-                    // FieldErrorsの個数�?、以下�?�処�?を繰り返す
+                    // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェ�?クエラーメ�?セージを�?��?
+                        // 入力チェックエラーメッセージを出力
                         LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
                                 + "]" + "(" + inputData.toString() + ")");
                     }
 
-                    // 入力チェ�?クエラー?�?100:異常終�??�?
+                    // 入力チェックエラー（100:異常終了）
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
                     contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
                     return RepeatStatus.FINISHED;
                 }
 
-                // DTOの詰め替え�?��?
+                // DTOの詰め替え処理
                 FareTypeAggregationDto printData = beanMapper.map(inputData, FareTypeAggregationDto.class);
 
                 // ファイル書き込み
                 try {
                     fareTypeAggregationWriter.write(Arrays.asList(printData));
                 } catch (Exception e) {
-                    // ファイル書込みエラー?�?100:異常終�??�?
+                    // ファイル書込みエラー（100:異常終了）
                     LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(outputFilePath), e);
                     contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
                     return RepeatStatus.FINISHED;
                 }
 
-                // 出力件数カウントア�?�?
+                // 出力件数カウントアップ
                 outputLineCount++;
             }
         } catch (ItemStreamException e) {
@@ -187,17 +187,17 @@ public class JBBB01003Tasklet implements Tasklet {
                 // ファイルクローズ
                 fareTypeAggregationWriter.close();
             } catch (ItemStreamException e) {
-                // クローズ失�?
+                // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失�?", e);
+                    LOGGER.debug("クローズ失敗", e);
                 }
             }
         }
 
-        // 出力�?�ファイルとファイル出力件数をログに出�?
+        // 出力先ファイルとファイル出力件数をログに出力
         LOGGER.info(LogMessages.I_AR_FW_L0003.getMessage(outputFilePath, outputLineCount));
 
-        // ジョブ終�?コード�?0:正常終�??�?
+        // ジョブ終了コード（0:正常終了）
         contribution.setExitStatus(new ExitStatus("NORMAL"));
         return RepeatStatus.FINISHED;
     }

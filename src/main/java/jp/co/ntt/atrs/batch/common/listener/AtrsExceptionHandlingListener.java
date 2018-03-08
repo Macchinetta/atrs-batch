@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,23 +34,23 @@ public class AtrsExceptionHandlingListener implements StepExecutionListener {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        // stepExecutionからエラー�?報を取得する�??
+        // stepExecutionからエラー情報を取得する。
         List<Throwable> exceptions = stepExecution.getFailureExceptions();
 
-        // エラー�?報がな�?場合�?�、正常終�?とする�?
+        // エラー情報がない場合は、正常終了とする。
         if (exceptions.isEmpty()) {
             return new ExitStatus("NORMAL");
         }
 
-        // エラー�?報がある�?�合�?�、例外ハンドリングを行う�?
+        // エラー情報がある場合は、例外ハンドリングを行う。
         for (Throwable th : exceptions) {
             if (th instanceof AtrsBatchException) {
-                // 業務上で想定�??のエラーの場合�?�ジョブ終�?コー�?
+                // 業務上で想定内のエラーの場合のジョブ終了コード
                 return new ExitStatus("BUSINESS_ERROR");
             }
         }
 
-        // 業務上で想定外�?�エラーの場合�?�ジョブ終�?コー�?
+        // 業務上で想定外のエラーの場合のジョブ終了コード
         return new ExitStatus("SYSTEM_ERROR");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,15 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * �?定サイズチェ�?クアノテーション
+ * 指定サイズチェックアノテーション
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
 @Constraint(validatedBy = {})
 @Documented
-// 0は�?ミ�?�。�??部で置き換える
+// 0はダミー。内部で置き換える
 @Size(min = 0, max = 0)
 @ReportAsSingleViolation
 @SuppressWarnings("javadoc")
@@ -61,7 +61,7 @@ public @interface FixedLength {
     int value();
 
     /**
-     * �?数設定用リス�?
+     * 複数設定用リスト
      */
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RUNTIME)

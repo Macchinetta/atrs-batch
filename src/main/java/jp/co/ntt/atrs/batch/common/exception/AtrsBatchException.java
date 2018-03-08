@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,47 +17,47 @@
 package jp.co.ntt.atrs.batch.common.exception;
 
 /**
- * ATRS-Batch用のExceptionクラス�?
+ * ATRS-Batch用のExceptionクラス。
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 public class AtrsBatchException extends BatchException {
 
     /**
-     * シリアルバ�?�ジョンID
+     * シリアルバージョンID
      */
     private static final long serialVersionUID = 6368315692983549460L;
 
     /**
-     * AtrsBatchExceptionを生成す�?
+     * AtrsBatchExceptionを生成する
      */
     public AtrsBatchException() {
         super();
     }
 
     /**
-     * AtrsBatchExceptionを生成す�?
+     * AtrsBatchExceptionを生成する
      * 
-     * @param message エラーメ�?セージ
+     * @param message エラーメッセージ
      */
     public AtrsBatchException(String message) {
         super(message);
     }
 
     /**
-     * AtrsBatchExceptionを生成す�?
+     * AtrsBatchExceptionを生成する
      * 
-     * @param message エラーメ�?セージ
-     * @param cause 原因となった例�?
+     * @param message エラーメッセージ
+     * @param cause 原因となった例外
      */
     public AtrsBatchException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * AtrsBatchExceptionを生成す�?
+     * AtrsBatchExceptionを生成する
      * 
-     * @param cause 原因となった例�?
+     * @param cause 原因となった例外
      */
     public AtrsBatchException(Throwable cause) {
         super(cause);

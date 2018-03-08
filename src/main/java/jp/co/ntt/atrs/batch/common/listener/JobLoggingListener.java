@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,29 +28,29 @@ import jp.co.ntt.atrs.batch.common.logging.LogMessages;
 public class JobLoggingListener implements JobExecutionListener {
 
     /**
-     * メ�?セージ出力に利用するログ機�?�を提供するインタフェース�?
+     * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(JobLoggingListener.class);
 
     /**
-     * ジョブ開始前処�?�?
+     * ジョブ開始前処理。
      * 
      * @param jobExecution
      */
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        // ジョブが開始したことをログに出力する�??
+        // ジョブが開始したことをログに出力する。
         LOGGER.info(LogMessages.I_AR_FW_L0001.getMessage(jobExecution.getJobInstance().getJobName()));
     }
 
     /**
-     * ジョブ終�?後�?��?�?
+     * ジョブ終了後処理。
      * 
      * @param jobExecution
      */
     @Override
     public void afterJob(JobExecution jobExecution) {
-        // ジョブが終�?したことをログに出力する�??
+        // ジョブが終了したことをログに出力する。
         LOGGER.info(LogMessages.I_AR_FW_L0002.getMessage(jobExecution.getJobInstance().getJobName()));
     }
 

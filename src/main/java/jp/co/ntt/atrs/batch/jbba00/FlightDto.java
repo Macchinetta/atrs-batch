@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,20 +29,20 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * フライト情報�?ーブルオブジェクト�??
+ * フライト情報テーブルオブジェクト。
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 public class FlightDto {
 
     /**
-     * 搭乗日�?
+     * 搭乗日。
      */
     @NotNull
     private Date departureDate;
 
     /**
-     * 便名�??
+     * 便名。
      */
     @NotNull
     @HalfWidthAlphaNumber
@@ -50,7 +50,7 @@ public class FlightDto {
     private String flightName;
 
     /**
-     * 搭乗クラスコード�??
+     * 搭乗クラスコード。
      */
     @NotNull
     @HalfWidthAlpha
@@ -58,7 +58,7 @@ public class FlightDto {
     private String boardingClassCd;
 
     /**
-     * 運�?種別コード�??
+     * 運賃種別コード。
      */
     @NotNull
     @HalfWidthAlphaNumber
@@ -66,13 +66,13 @@ public class FlightDto {
     private String fareTypeCd;
 
     /**
-     * 空席数�?
+     * 空席数。
      */
     @NotNull
     private Integer vacantNum;
 
     /**
-     * 搭乗日 を取得する�??
+     * 搭乗日 を取得する。
      * 
      * @return 搭乗日
      */
@@ -81,7 +81,7 @@ public class FlightDto {
     }
 
     /**
-     * 搭乗日 を設定する�??
+     * 搭乗日 を設定する。
      * 
      * @param departureDate 搭乗日
      */
@@ -90,61 +90,61 @@ public class FlightDto {
     }
 
     /**
-     * 便�? を取得する�??
+     * 便名 を取得する。
      * 
-     * @return 便�?
+     * @return 便名
      */
     public String getFlightName() {
         return flightName;
     }
 
     /**
-     * 便�? を設定する�??
+     * 便名 を設定する。
      * 
-     * @param flightName 便�?
+     * @param flightName 便名
      */
     public void setFlightName(String flightName) {
         this.flightName = flightName;
     }
 
     /**
-     * 搭乗クラスコー�? を取得する�??
+     * 搭乗クラスコード を取得する。
      * 
-     * @return 搭乗クラスコー�?
+     * @return 搭乗クラスコード
      */
     public String getBoardingClassCd() {
         return boardingClassCd;
     }
 
     /**
-     * 搭乗クラスコー�? を設定する�??
+     * 搭乗クラスコード を設定する。
      * 
-     * @param boardingClassCd 搭乗クラスコー�?
+     * @param boardingClassCd 搭乗クラスコード
      */
     public void setBoardingClassCd(String boardingClassCd) {
         this.boardingClassCd = boardingClassCd;
     }
 
     /**
-     * 運�?種別コー�? を取得する�??
+     * 運賃種別コード を取得する。
      * 
-     * @return 運�?種別コー�?
+     * @return 運賃種別コード
      */
     public String getFareTypeCd() {
         return fareTypeCd;
     }
 
     /**
-     * 運�?種別コー�? を設定する�??
+     * 運賃種別コード を設定する。
      * 
-     * @param fareTypeCd 運�?種別コー�?
+     * @param fareTypeCd 運賃種別コード
      */
     public void setFareTypeCd(String fareTypeCd) {
         this.fareTypeCd = fareTypeCd;
     }
 
     /**
-     * 空席数 を取得する�??
+     * 空席数 を取得する。
      * 
      * @return 空席数
      */
@@ -153,7 +153,7 @@ public class FlightDto {
     }
 
     /**
-     * 空席数 を設定する�??
+     * 空席数 を設定する。
      * 
      * @param vacantNum 空席数
      */

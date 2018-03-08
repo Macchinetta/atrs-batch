@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,68 +58,68 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 
 /**
- * 予�?�?報を集計し、予�?�?計情報をCSVファイルに出力する�??
+ * 予約情報を集計し、予約集計情報をCSVファイルに出力する。
  * 
- * @author 電電次�?
+ * @author 電電次郎
  */
 @Component("JBBB01001Tasklet")
 @Scope("step")
 public class JBBB01001Tasklet implements Tasklet {
     /**
-     * メ�?セージ出力に利用するログ機�?�を提供するインタフェース�?
+     * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(JBBB01001Tasklet.class);
 
     /**
-     * 予�?�?報�?計結果入力用reader?��コントロールブレイク用?���??
+     * 予約情報集計結果入力用reader（コントロールブレイク用）。
      */
     @Inject
     SingleItemPeekableItemReader<ReservationResultDto> reservationResultReader;
 
     /**
-     * 予�?�?報�?計�?�力用writer�?
+     * 予約情報集計出力用writer。
      */
     @Inject
     ItemStreamWriter<ReservationDto> reservationWriter;
 
     /**
-     * 入力チェ�?ク用のバリ�?ータ�?
+     * 入力チェック用のバリデータ。
      */
     @Inject
     Validator<ReservationResultDto> validator;
 
     /**
-     * メ�?セージ管�?機�?��?
+     * メッセージ管理機能。
      */
     @Inject
     MessageSource messageSource;
 
     /**
-     * Beanマッパ�?��?
+     * Beanマッパー。
      */
     @Inject
     Mapper beanMapper;
 
     /**
-     * ジョブパラメータ �?計開始日�?
+     * ジョブパラメータ 集計開始日。
      */
     @Value("#{jobParameters['firstDateStr']}")
     private String firstDateStr;
 
     /**
-     * ジョブパラメータ �?計終�?日�?
+     * ジョブパラメータ 集計終了日。
      */
     @Value("#{jobParameters['lastDateStr']}")
     private String lastDateStr;
 
     /**
-     * ユーザーの現在の作業�?ィレクトリ�?
+     * ユーザーの現在の作業ディレクトリ。
      */
     @Value("${user.dir}")
     private String userDir;
 
     /**
-     * 予�?�?報�?計結果ファイルパス�?
+     * 予約情報集計結果ファイルパス。
      */
     @Value("${path.ReservationData}")
     private String PATH_RESERVATION_DATA;
@@ -128,20 +128,20 @@ public class JBBB01001Tasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getExecutionContext();
 
-        // �?計期間�?�取得�?�設�?
+        // 集計期間の取得・設定
         AggregationPeriodDto aggregationPeriod = AggregationPeriodUtil.create(firstDateStr, lastDateStr);
 
         if (aggregationPeriod == null) {
-            // �?計期間�?�取得で例外�?100:異常終�??�?
+            // 集計期間の取得で例外（100:異常終了）
             contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
             return RepeatStatus.FINISHED;
         }
 
-        // 出力ファイルパスと出力件数を保持するMap�?
+        // 出力ファイルパスと出力件数を保持するMap。
         Map<String, Integer> outputLineCountMap = new LinkedHashMap<>();
 
         try {
-            // 検索条件�?�?
+            // 検索条件指定
             executionContext.put("firstDate", aggregationPeriod.getFirstDate());
             executionContext.put("lastDate", aggregationPeriod.getLastDate());
 
@@ -152,38 +152,38 @@ public class JBBB01001Tasklet implements Tasklet {
             int dataCount = 0;
             int outputLineCount = 0;
 
-            // 処�?中の出力�?�ファイルパス
+            // 処理中の出力先ファイルパス
             Path outputFile = Paths.get(userDir, PATH_RESERVATION_DATA);
 
-            // コントロールブレイクの処�?結果を含めたグループ単位�?�レコードを格納す�?
+            // コントロールブレイクの処理結果を含めたグループ単位のレコードを格納する
             List<ReservationDto> items = new ArrayList<>();
 
-            // 次要�?に�?ータが存在するまで処�?を繰り返す
+            // 次要素にデータが存在するまで処理を繰り返す
             while (reservationResultReader.peek() != null) {
                 dataCount++;
                 outputLineCount++;
 
-                // 予�?�?報を取得す�?
+                // 予約情報を取得する
                 ReservationResultDto inputData = reservationResultReader.read();
 
-                // 入力チェ�?クエラーハンドリング
+                // 入力チェックエラーハンドリング
                 try {
                     validator.validate(inputData);
                 } catch (ValidationException e) {
-                    // FieldErrorsの個数�?、以下�?�処�?を繰り返す
+                    // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェ�?クエラーメ�?セージを�?��?
+                        // 入力チェックエラーメッセージを出力
                         LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
                                 + "]" + "(" + inputData.toString() + ")");
                     }
 
-                    // 入力チェ�?クエラー?�?100:異常終�??�?
+                    // 入力チェックエラー（100:異常終了）
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
                     contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
                     return RepeatStatus.FINISHED;
                 }
 
-                // DTOの詰め替え�?��?
+                // DTOの詰め替え処理
                 ReservationDto printData = beanMapper.map(inputData, ReservationDto.class);
 
                 items.add(printData);
@@ -191,9 +191,9 @@ public class JBBB01001Tasklet implements Tasklet {
                 // 次のレコードを先読みする
                 ReservationResultDto nextData = reservationResultReader.peek();
 
-                // 対象レコード�?��?後にコントロールブレイクを実施する
+                // 対象レコード処理後にコントロールブレイクを実施する
                 if (isBreakByReserveDate(nextData, inputData)) {
-                    // コントロールブレイクした値を取得し、�?�力ファイルネ�?��?用に�?字�?�変換する
+                    // コントロールブレイクした値を取得し、出力ファイルネーム用に文字列変換する
                     LocalDate ld = new LocalDate(inputData.getReserveDate());
                     String outputDate = ld.toString("yyyyMMdd");
 
@@ -208,17 +208,17 @@ public class JBBB01001Tasklet implements Tasklet {
                         reservationWriter.write(items);
                         items.clear();
 
-                        // �?ファイルの出力件数を保持する
+                        // 各ファイルの出力件数を保持する
                         outputLineCountMap.put(outputFilePath, outputLineCount);
 
-                        // 出力件数初期�?
+                        // 出力件数初期化
                         outputLineCount = 0;
                     } catch (ItemStreamException e) {
                         // ファイルオープンエラー
                         LOGGER.error(LogMessages.E_AR_FW_L9006.getMessage());
                         throw new AtrsBatchException(e);
                     } catch (Exception e) {
-                        // ファイル書込みエラー?�?100:異常終�??�?
+                        // ファイル書込みエラー（100:異常終了）
                         LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(), e);
                         contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
                         return RepeatStatus.FINISHED;
@@ -227,28 +227,28 @@ public class JBBB01001Tasklet implements Tasklet {
                             // 出力ファイルクローズ
                             reservationWriter.close();
                         } catch (ItemStreamException e) {
-                            // クローズ失�?
+                            // クローズ失敗
                             if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("クローズ失�?", e);
+                                LOGGER.debug("クローズ失敗", e);
                             }
                         }
                     }
                     
                     try {
-                        // リネ�?��?
+                        // リネーム
                         Files.move(outputFile, Paths.get(outputFilePath));
                     } catch (IOException e) {
-                        // ファイルリネ�?��?失�?
+                        // ファイルリネーム失敗
                         LOGGER.error(LogMessages.E_AR_FW_L9009.getMessage(outputFile.toString(), outputFilePath), e);
                         throw new AtrsBatchException(e);
                     }
                 }
             }
 
-            // 取得件数�?0件の場合ログを�?�力する�??
+            // 取得件数が0件の場合ログを出力する。
             if (dataCount == 0) {
                 LOGGER.warn(LogMessages.W_AR_BB01_L2001.getMessage());
-                // ジョブ終�?コード�?2:正常終�??�?
+                // ジョブ終了コード（2:正常終了）
                 contribution.setExitStatus(new ExitStatus("NORMAL_NONE_TARGET"));
                 return RepeatStatus.FINISHED;
             }
@@ -261,28 +261,28 @@ public class JBBB01001Tasklet implements Tasklet {
                 // 入力ファイルクローズ
                 reservationResultReader.close();
             } catch (ItemStreamException e) {
-                // クローズ失�?
+                // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失�?", e);
+                    LOGGER.debug("クローズ失敗", e);
                 }
             }
         }
 
-        // 出力�?�ファイルとファイル出力件数をログに出�?
+        // 出力先ファイルとファイル出力件数をログに出力
         for (Entry<String, Integer> entry : outputLineCountMap.entrySet()) {
             LOGGER.info(LogMessages.I_AR_FW_L0003.getMessage(entry.getKey(), entry.getValue()));
         }
 
-        // ジョブ終�?コード�?0:正常終�??�?
+        // ジョブ終了コード（0:正常終了）
         contribution.setExitStatus(new ExitStatus("NORMAL"));
         return RepeatStatus.FINISHED;
     }
 
     /**
-     * 次要�?の�?ータと現在の�?ータとを比�?し�?�trueまた�?�falseを返す�?
+     * 次要素のデータと現在のデータとを比較し、trueまたはfalseを返す。
      * 
-     * @param nextData 次の�?ータ
-     * @param inputData 現在の�?ータ
+     * @param nextData 次のデータ
+     * @param inputData 現在のデータ
      * @return true or false
      */
     private boolean isBreakByReserveDate(ReservationResultDto nextData, ReservationResultDto inputData) {

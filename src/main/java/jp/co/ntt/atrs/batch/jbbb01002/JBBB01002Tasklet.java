@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,68 +50,68 @@ import java.util.Arrays;
 import javax.inject.Inject;
 
 /**
- * �?計期間�??の区間搭乗�??�?報をCSVファイルに出力する�??
+ * 集計期間内の区間搭乗者情報をCSVファイルに出力する。
  * 
- * @author 電電次�?
+ * @author 電電次郎
  */
 @Component("JBBB01002Tasklet")
 @Scope("step")
 public class JBBB01002Tasklet implements Tasklet {
     /**
-     * メ�?セージ出力に利用するログ機�?�を提供するインタフェース�?
+     * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(JBBB01002Tasklet.class);
 
     /**
-     * 入力チェ�?ク用のバリ�?ータ�?
+     * 入力チェック用のバリデータ。
      */
     @Inject
     Validator<RouteAggregationResultDto> validator;
 
     /**
-     * メ�?セージ管�?機�?��?
+     * メッセージ管理機能。
      */
     @Inject
     MessageSource messageSource;
     
     /**
-     * DB取得後�?��?ータ操作機�?�で提供する�?��?のインターフェース�?
+     * DB取得後のデータ操作機能で提供する処理のインターフェース。
      */
     @Inject
     SingleItemPeekableItemReader<RouteAggregationResultDto> routeAggregationResultReader;
 
     /**
-     * バックア�?プファイル操作機�?�で提供する�?��?のインターフェース�?
+     * バックアップファイル操作機能で提供する処理のインターフェース。
      */
     @Inject
     ItemStreamWriter<RouteAggregationDto> routeAggregationWriter;
 
     /**
-     * Beanマッパ�?��?
+     * Beanマッパー。
      */
     @Inject
     Mapper beanMapper;
 
     /**
-     * ジョブパラメータ �?計開始日
+     * ジョブパラメータ 集計開始日
      */
     @Value("#{jobParameters['firstDateStr']}")
     private String firstDateStr;
 
     /**
-     * ジョブパラメータ �?計終�?日
+     * ジョブパラメータ 集計終了日
      */
     @Value("#{jobParameters['lastDateStr']}")
     private String lastDateStr;
 
     /**
-     * ユーザーの現在の作業�?ィレクトリ
+     * ユーザーの現在の作業ディレクトリ
      */
     @Value("${user.dir}")
     private String userDir;
 
     /**
-     * 区間搭乗�??�?計結果ファイルパス�?
+     * 区間搭乗者集計結果ファイルパス。
      */
     @Value("${path.RouteAggregationData}")
     private String PATH_ROUTE_AGGREGATION_DATA;
@@ -121,31 +121,31 @@ public class JBBB01002Tasklet implements Tasklet {
 
         ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getExecutionContext();
 
-        // 出力ファイルパスの取�?
+        // 出力ファイルパスの取得
         Path outputFilePath = Paths.get(userDir, PATH_ROUTE_AGGREGATION_DATA);
 
-        // 出力件数カウン�?
+        // 出力件数カウント
         int outputLineCount = 0;
 
-        // �?計期間�?�取得�?�設�?
+        // 集計期間の取得・設定
         AggregationPeriodDto aggregationPeriod = AggregationPeriodUtil.create(firstDateStr, lastDateStr);
 
         if (aggregationPeriod == null) {
-            // �?計期間�?�取得で例外�?100:異常終�??�?
+            // 集計期間の取得で例外（100:異常終了）
             contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
             return RepeatStatus.FINISHED;
         }
 
         try {
-            // 検索条件�?�?
+            // 検索条件指定
             executionContext.put("firstDate", aggregationPeriod.getFirstDate());
             executionContext.put("lastDate", aggregationPeriod.getLastDate());
 
-            // 搭乗率算�?�のための席数�?報
+            // 搭乗率算出のための席数情報
             int totalNSeatNum = 0;
             int totalSSeatNum = 0;
 
-            // 搭乗�??数の初期�?
+            // 搭乗者数の初期化
             int passengerCount = 0;
 
             // DB取得用readerオープン
@@ -154,67 +154,67 @@ public class JBBB01002Tasklet implements Tasklet {
             // 出力用ファイルオープン
             routeAggregationWriter.open(executionContext);
 
-            // 次要�?に�?ータが存在するまで処�?を繰り返す
+            // 次要素にデータが存在するまで処理を繰り返す
             while (routeAggregationResultReader.peek() != null) {
 
-                // �?ータ取�?
+                // データ取得
                 RouteAggregationResultDto inputData = routeAggregationResultReader.read();
 
-                // 入力チェ�?クエラーハンドリング
+                // 入力チェックエラーハンドリング
                 try {
                     validator.validate(inputData);
                 } catch (ValidationException e) {
-                    // FieldErrorsの個数�?、以下�?�処�?を繰り返す
+                    // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェ�?クエラーメ�?セージを�?��?
+                        // 入力チェックエラーメッセージを出力
                         LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
                                 + "]" + "(" + inputData.toString() + ")");
                     }
-                    // 入力チェ�?クエラー?�?100:異常終�??�?
+                    // 入力チェックエラー（100:異常終了）
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
                     contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
                     return RepeatStatus.FINISHED;
                 }
-                // 席数?���?般席・特別席?���?�搭乗�??数をそれぞれ加�?
+                // 席数（一般席・特別席）、搭乗者数をそれぞれ加算
                 totalNSeatNum += inputData.getNormalSeatNum();
                 totalSSeatNum += inputData.getSpecialSeatNum();
                 passengerCount += inputData.getPassengerNum();
 
-                // 次�?ータを取�?
+                // 次データを取得
                 RouteAggregationResultDto nextdata = routeAggregationResultReader.peek();
 
-                // 次�?ータと現在�?ータを比�?
+                // 次データと現在データを比較
                 if (isBreakByRouteNo(nextdata, inputData)) {
 
-                    // 搭乗�??数の設�?
+                    // 搭乗者数の設定
                     inputData.setPassengerNum(passengerCount);
 
-                    // 搭乗率計�?
+                    // 搭乗率計算
                     BigDecimal totalSeatNum = new BigDecimal(totalNSeatNum).add(new BigDecimal(totalSSeatNum));
                     BigDecimal passcount = new BigDecimal(passengerCount);
                     BigDecimal loadFactor = passcount.multiply(new BigDecimal(100)).divide(totalSeatNum, 2,
                             BigDecimal.ROUND_HALF_UP);
 
-                    // DTOの詰め替え�?��?
+                    // DTOの詰め替え処理
                     RouteAggregationDto printData = beanMapper.map(inputData, RouteAggregationDto.class);
 
-                    // 搭乗率計�?�設�?
+                    // 搭乗率計の設定
                     printData.setLoadFactor(loadFactor);
 
                     // ファイル書き込み
                     try {
                         routeAggregationWriter.write(Arrays.asList(printData));
                     } catch (Exception e) {
-                        // ファイル書込みエラー?�?100:異常終�??�?
+                        // ファイル書込みエラー（100:異常終了）
                         LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(), e);
                         contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
                         return RepeatStatus.FINISHED;
                     }
 
-                    // 出力件数カウントア�?�?
+                    // 出力件数カウントアップ
                     outputLineCount++;
 
-                    // 総座席数、搭乗�??数リセ�?�?
+                    // 総座席数、搭乗者数リセット
                     totalNSeatNum = 0;
                     totalSSeatNum = 0;
                     passengerCount = 0;
@@ -229,9 +229,9 @@ public class JBBB01002Tasklet implements Tasklet {
                 // DB取得用readerクローズ
                 routeAggregationResultReader.close();
             } catch (ItemStreamException e) {
-                // クローズ失�?
+                // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失�?", e);
+                    LOGGER.debug("クローズ失敗", e);
                 }
             }
 
@@ -239,37 +239,37 @@ public class JBBB01002Tasklet implements Tasklet {
                 // ファイルクローズ
                 routeAggregationWriter.close();
             } catch (ItemStreamException e) {
-                // クローズ失�?
+                // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失�?", e);
+                    LOGGER.debug("クローズ失敗", e);
                 }
             }
         }
 
         if (outputLineCount == 0) {
-            // 取得件数�?0件?�?2:正常終�??�?
+            // 取得件数が0件（2:正常終了）
             LOGGER.warn(LogMessages.W_AR_BB01_L2002.getMessage());
             contribution.setExitStatus(new ExitStatus("NORMAL_NONE_TARGET"));
             return RepeatStatus.FINISHED;
         }
 
-        // 出力�?�ファイルとファイル出力件数をログに出�?
+        // 出力先ファイルとファイル出力件数をログに出力
         LOGGER.info(LogMessages.I_AR_FW_L0003.getMessage(outputFilePath, outputLineCount));
 
-        // ジョブ終�?コード�?0:正常終�??�?
+        // ジョブ終了コード（0:正常終了）
         contribution.setExitStatus(new ExitStatus("NORMAL"));
         return RepeatStatus.FINISHED;
     }
 
     /**
-     * 次�?ータと現在�?ータとを比�?し�?�trueまた�?�falseを返す�?
+     * 次データと現在データとを比較し、trueまたはfalseを返す。
      * 
-     * @param nextdata 次�?ータ
-     * @param inputData 現在の�?ータ
+     * @param nextdata 次データ
+     * @param inputData 現在のデータ
      * @return true or false
      */
     private boolean isBreakByRouteNo(RouteAggregationResultDto nextdata, RouteAggregationResultDto inputData) {
-        // 次�?ータがnullの場合�?�また�?�次�?ータと現在�?ータが�?致しな�?場合�?�trueを返す
+        // 次データがnullの場合、または次データと現在データが一致しない場合はtrueを返す
         if (nextdata == null || (!nextdata.getRouteNo().equals(inputData.getRouteNo()))) {
             return true;
         }

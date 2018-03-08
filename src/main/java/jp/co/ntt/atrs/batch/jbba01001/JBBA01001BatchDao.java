@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,16 @@ package jp.co.ntt.atrs.batch.jbba01001;
 import jp.co.ntt.atrs.batch.jbba00.FlightDto;
 
 /**
- * フライト情報更新ジョブで使用するDAOインターフェース�?
+ * フライト情報更新ジョブで使用するDAOインターフェース。
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 public interface JBBA01001BatchDao {
 
     /**
-     * フライト情報を登録する�?
+     * フライト情報を登録する。
      * 
-     * @param flightDto フライト情報�?ーブルオブジェク�?
+     * @param flightDto フライト情報テーブルオブジェクト
      * @return フライト情報登録件数
      */
     int insertFlight(FlightDto flightDto);

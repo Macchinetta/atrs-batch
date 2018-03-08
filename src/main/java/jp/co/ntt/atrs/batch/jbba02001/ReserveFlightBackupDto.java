@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,80 +22,80 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.Date;
 
 /**
- * 予�?フライト情報�?避オブジェクト�??
+ * 予約フライト情報退避オブジェクト。
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 public class ReserveFlightBackupDto {
 
     /**
-     * 予�?フライト番号�?
+     * 予約フライト番号。
      */
     private int reserveFlightNo;
 
     /**
-     * 予�?番号�?
+     * 予約番号。
      */
     private String reserveNo;
 
     /**
-     * 搭乗日�?
+     * 搭乗日。
      */
     private Date departureDate;
 
     /**
-     * 便名�??
+     * 便名。
      */
     private String flightName;
 
     /**
-     * 搭乗クラスコード�??
+     * 搭乗クラスコード。
      */
     private String boardingClassCd;
 
     /**
-     * 運�?種別コード�??
+     * 運賃種別コード。
      */
     private String fareTypeCd;
 
     /**
-     * 予�?フライト番号 を取得する�??
+     * 予約フライト番号 を取得する。
      * 
-     * @return 予�?フライト番号
+     * @return 予約フライト番号
      */
     public int getReserveFlightNo() {
         return reserveFlightNo;
     }
 
     /**
-     * 予�?フライト番号 を設定する�??
+     * 予約フライト番号 を設定する。
      * 
-     * @param reserveFlightNo 予�?フライト番号
+     * @param reserveFlightNo 予約フライト番号
      */
     public void setReserveFlightNo(int reserveFlightNo) {
         this.reserveFlightNo = reserveFlightNo;
     }
 
     /**
-     * 予�?番号 を取得する�??
+     * 予約番号 を取得する。
      * 
-     * @return 予�?番号
+     * @return 予約番号
      */
     public String getReserveNo() {
         return reserveNo;
     }
 
     /**
-     * 予�?番号 を設定する�??
+     * 予約番号 を設定する。
      * 
-     * @param reserveNo 予�?番号
+     * @param reserveNo 予約番号
      */
     public void setReserveNo(String reserveNo) {
         this.reserveNo = reserveNo;
     }
 
     /**
-     * 搭乗日 を取得する�??
+     * 搭乗日 を取得する。
      * 
      * @return 搭乗日
      */
@@ -104,7 +104,7 @@ public class ReserveFlightBackupDto {
     }
 
     /**
-     * 搭乗日 を設定する�??
+     * 搭乗日 を設定する。
      * 
      * @param departureDate 搭乗日
      */
@@ -113,54 +113,54 @@ public class ReserveFlightBackupDto {
     }
 
     /**
-     * 便�? を取得する�??
+     * 便名 を取得する。
      * 
-     * @return 便�?
+     * @return 便名
      */
     public String getFlightName() {
         return flightName;
     }
 
     /**
-     * 便�? を設定する�??
+     * 便名 を設定する。
      * 
-     * @param flightName 便�?
+     * @param flightName 便名
      */
     public void setFlightName(String flightName) {
         this.flightName = flightName;
     }
 
     /**
-     * 搭乗クラスコー�? を取得する�??
+     * 搭乗クラスコード を取得する。
      * 
-     * @return 搭乗クラスコー�?
+     * @return 搭乗クラスコード
      */
     public String getBoardingClassCd() {
         return boardingClassCd;
     }
 
     /**
-     * 搭乗クラスコー�? を設定する�??
+     * 搭乗クラスコード を設定する。
      * 
-     * @param boardingClassCd 搭乗クラスコー�?
+     * @param boardingClassCd 搭乗クラスコード
      */
     public void setBoardingClassCd(String boardingClassCd) {
         this.boardingClassCd = boardingClassCd;
     }
 
     /**
-     * 運�?種別コー�? を取得する�??
+     * 運賃種別コード を取得する。
      * 
-     * @return 運�?種別コー�?
+     * @return 運賃種別コード
      */
     public String getFareTypeCd() {
         return fareTypeCd;
     }
 
     /**
-     * 運�?種別コー�? を設定する�??
+     * 運賃種別コード を設定する。
      * 
-     * @param fareTypeCd 運�?種別コー�?
+     * @param fareTypeCd 運賃種別コード
      */
     public void setFareTypeCd(String fareTypeCd) {
         this.fareTypeCd = fareTypeCd;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,45 +48,45 @@ import jp.co.ntt.atrs.batch.common.util.DateUtil;
 import jp.co.ntt.atrs.batch.jbba00.FlightDto;
 
 /**
- * フライト情報更新ファイルを読込み、フライト情報を更新する�?
+ * フライト情報更新ファイルを読込み、フライト情報を更新する。
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 @Component("JBBA01001Tasklet")
 @Scope("step")
 public class JBBA01001Tasklet implements Tasklet {
 
     /**
-     * メ�?セージ出力に利用するログ機�?�を提供するインタフェース�?
+     * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(JBBA01001Tasklet.class);
 
     /**
-     * 入力チェ�?ク用のバリ�?ータ�?
+     * 入力チェック用のバリデータ。
      */
     @Inject
     Validator<FlightUpdateDto> validator;
 
     /**
-     * メ�?セージ管�?機�?��?
+     * メッセージ管理機能。
      */
     @Inject
     MessageSource messageSource;
 
     /**
-     * ファイルアクセス用?���?�力）インターフェース�?
+     * ファイルアクセス用（入力）インターフェース。
      */
     @Inject
     ItemStreamReader<FlightUpdateDto> flightUpdateReader;
 
     /**
-     * フライト情報更新DAOインタフェース�?
+     * フライト情報更新DAOインタフェース。
      */
     @Inject
     JBBA01001BatchDao dao;
 
     /**
-     * Beanマッパ�?��?
+     * Beanマッパー。
      */
     @Inject
     Mapper beanMapper;
@@ -98,26 +98,26 @@ public class JBBA01001Tasklet implements Tasklet {
     private String PATH_FLIGHT_UPDATE;
 
     /**
-     * フライト情報更新ファイル?��リネ�?��?後）パス
+     * フライト情報更新ファイル（リネーム後）パス
      */
     @Value("${path.RenameFlightUpdate}")
     private String PATH_RENAME_FLIGHT_UPDATE;
 
     /**
-     * ユーザーの現在の作業�?ィレクトリ�?
+     * ユーザーの現在の作業ディレクトリ。
      */
     @Value("${user.dir}")
     private String userDir;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        // 入出力ファイルのパスを取�?
+        // 入出力ファイルのパスを取得
         Path inputFile = Paths.get(userDir, PATH_FLIGHT_UPDATE);
         Path outputFile = Paths.get(userDir, PATH_RENAME_FLIGHT_UPDATE);
 
-        // フライト情報更新ファイルの存在チェ�?クを実施する�?
+        // フライト情報更新ファイルの存在チェックを実施する。
         if (!Files.exists(inputFile)) {
-            // 更新ファイルの取得失敗�?10:警告終�??�?
+            // 更新ファイルの取得失敗（10:警告終了）
             LOGGER.warn(LogMessages.W_AR_BA01_L8001.getMessage(inputFile.toString()));
             contribution.setExitStatus(new ExitStatus("WARNING"));
             return RepeatStatus.FINISHED;
@@ -130,10 +130,10 @@ public class JBBA01001Tasklet implements Tasklet {
             // フライト情報更新ファイルオープン
             flightUpdateReader.open(chunkContext.getStepContext().getStepExecution().getExecutionContext());
 
-            // 入力�?�ファイルをログに出�?
+            // 入力先ファイルをログに出力
             LOGGER.info(LogMessages.I_AR_FW_L0004.getMessage(inputFile.toString()));
 
-            // 登録?���?�力チェ�?ク?���?��?
+            // 登録（入力チェック）処理
             insertFlightCnt = registerData(flightUpdateReader);
         } catch (ItemStreamException e) {
             // ファイルオープンエラー
@@ -143,33 +143,33 @@ public class JBBA01001Tasklet implements Tasklet {
             try {
                 flightUpdateReader.close();
             } catch (ItemStreamException e) {
-                // クローズ失�?
+                // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失�?", e);
+                    LOGGER.debug("クローズ失敗", e);
                 }
             }
         }
 
         try {
-            // フライト情報更新ファイルのリネ�?��?
+            // フライト情報更新ファイルのリネーム
             Files.move(inputFile, outputFile);
         } catch (IOException e) {
-            // ファイルリネ�?��?失�?
+            // ファイルリネーム失敗
             LOGGER.error(LogMessages.E_AR_FW_L9009.getMessage(inputFile.toString(), outputFile.toString()), e);
             throw new AtrsBatchException(e);
         }
 
-        // 登録件数をログに出力する�??
+        // 登録件数をログに出力する。
         LOGGER.info(LogMessages.I_AR_BA01_L0001.getMessage(String.valueOf(insertFlightCnt)));
 
-        // ジョブ終�?コード�?0:正常終�??�?
+        // ジョブ終了コード（0:正常終了）
         contribution.setExitStatus(new ExitStatus("NORMAL"));
 
         return RepeatStatus.FINISHED;
     }
 
     /**
-     * 登録?���?�力チェ�?ク?���?��?
+     * 登録（入力チェック）処理
      * 
      * @param reader 入力データ
      * @return フライト情報登録件数
@@ -180,26 +180,26 @@ public class JBBA01001Tasklet implements Tasklet {
         int insertFlightCnt = 0;
 
         try {
-            // フライト情報更新ファイルから�?ータを取得して入力チェ�?ク
+            // フライト情報更新ファイルからデータを取得して入力チェック
             FlightUpdateDto flightUpdateData = null;
             while ((flightUpdateData = reader.read()) != null) {
-                // 入力チェ�?クエラーハンドリング
+                // 入力チェックエラーハンドリング
                 try {
                     validator.validate(flightUpdateData);
                 } catch (ValidationException e) {
-                    // FieldErrorsの個数�?、以下�?�処�?を繰り返す
+                    // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェ�?クエラーメ�?セージを�?��?
+                        // 入力チェックエラーメッセージを出力
                         LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
                                 + "]" + "(" + flightUpdateData.getCount() + ")");
                     }
                     
-                    // 入力チェ�?クエラー
+                    // 入力チェックエラー
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
                     throw new AtrsBatchException(e);
                 }
 
-                // DTOの詰め替え�?��?
+                // DTOの詰め替え処理
                 FlightDto flightDto = beanMapper.map(flightUpdateData, FlightDto.class);
 
                 try {

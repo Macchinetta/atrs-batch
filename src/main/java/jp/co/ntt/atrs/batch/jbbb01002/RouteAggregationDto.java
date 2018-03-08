@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,39 +23,39 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 区間搭乗�??�?報�?計オブジェクト�??
+ * 区間搭乗者情報集計オブジェクト。
  * 
- * @author 電電次�?
+ * @author 電電次郎
  */
 public class RouteAggregationDto {
 
     /**
-     * 搭乗日�?
+     * 搭乗日。
      */
     private Date departureDate;
 
     /**
-     * 出発空港�?
+     * 出発空港。
      */
     private String depAirport;
 
     /**
-     * 到�?空港�?
+     * 到着空港。
      */
     private String arrAirport;
 
     /**
-     * 搭乗�??数�?
+     * 搭乗者数。
      */
     private int passengerNum;
 
     /**
-     * 搭乗率�?
+     * 搭乗率。
      */
     private BigDecimal loadFactor;
 
     /**
-     * 搭乗日を取得する�??
+     * 搭乗日を取得する。
      * 
      * @return 搭乗日
      */
@@ -64,7 +64,7 @@ public class RouteAggregationDto {
     }
 
     /**
-     * 搭乗日を設定する�??
+     * 搭乗日を設定する。
      * 
      * @param departureDate 搭乗日
      */
@@ -73,7 +73,7 @@ public class RouteAggregationDto {
     }
 
     /**
-     * 出発空港を取得する�??
+     * 出発空港を取得する。
      * 
      * @return 出発空港
      */
@@ -82,7 +82,7 @@ public class RouteAggregationDto {
     }
 
     /**
-     * 出発空港を設定する�??
+     * 出発空港を設定する。
      * 
      * @param depAirport 出発空港
      */
@@ -91,43 +91,43 @@ public class RouteAggregationDto {
     }
 
     /**
-     * 到�?空港を取得する�??
+     * 到着空港を取得する。
      * 
-     * @return 到�?空港
+     * @return 到着空港
      */
     public String getArrAirport() {
         return arrAirport;
     }
 
     /**
-     * 到�?空港を設定する�??
+     * 到着空港を設定する。
      * 
-     * @param arrAirport 到�?空港
+     * @param arrAirport 到着空港
      */
     public void setArrAirport(String arrAirport) {
         this.arrAirport = arrAirport;
     }
 
     /**
-     * 搭乗�??数を取得する�??
+     * 搭乗者数を取得する。
      * 
-     * @return 搭乗�??数
+     * @return 搭乗者数
      */
     public int getPassengerNum() {
         return passengerNum;
     }
 
     /**
-     * 搭乗�??数を設定する�??
+     * 搭乗者数を設定する。
      * 
-     * @param passengerNum 搭乗�??数
+     * @param passengerNum 搭乗者数
      */
     public void setPassengerNum(int passengerNum) {
         this.passengerNum = passengerNum;
     }
 
     /**
-     * 搭乗率を取得する�??
+     * 搭乗率を取得する。
      * 
      * @return 搭乗率
      */
@@ -136,7 +136,7 @@ public class RouteAggregationDto {
     }
 
     /**
-     * 搭乗率を設定する�??
+     * 搭乗率を設定する。
      * 
      * @param loadFactor 搭乗率
      */

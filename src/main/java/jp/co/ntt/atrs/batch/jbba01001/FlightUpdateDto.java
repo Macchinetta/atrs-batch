@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 NTT Corporation.
+ * Copyright 2014-2018 NTT Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,17 +29,17 @@ import org.springframework.batch.item.ItemCountAware;
 import javax.validation.constraints.Size;
 
 /**
- * フライト情報更新オブジェクト�??
+ * フライト情報更新オブジェクト。
  * 
- * @author NTT 電電太�?
+ * @author NTT 電電太郎
  */
 public class FlightUpdateDto implements ItemCountAware {
 
-    // 何件目の�?ータでエラーとなったかを判定す�?
+    // 何件目のデータでエラーとなったかを判定する
     private int count;
 
     /**
-     * 搭乗日(�?字�??)�?
+     * 搭乗日(文字列)。
      */
     @NotEmpty
     @HalfWidthNumber
@@ -47,7 +47,7 @@ public class FlightUpdateDto implements ItemCountAware {
     private String departureDateStr;
 
     /**
-     * 便名�??
+     * 便名。
      */
     @NotEmpty
     @HalfWidthAlphaNumber
@@ -55,7 +55,7 @@ public class FlightUpdateDto implements ItemCountAware {
     private String flightName;
 
     /**
-     * 搭乗クラスコード�??
+     * 搭乗クラスコード。
      */
     @NotEmpty
     @HalfWidthAlpha
@@ -63,7 +63,7 @@ public class FlightUpdateDto implements ItemCountAware {
     private String boardingClassCd;
 
     /**
-     * 運�?種別コード�??
+     * 運賃種別コード。
      */
     @NotEmpty
     @HalfWidthAlphaNumber
@@ -71,7 +71,7 @@ public class FlightUpdateDto implements ItemCountAware {
     private String fareTypeCd;
 
     /**
-     * 空席数(�?字�??)�?
+     * 空席数(文字列)。
      */
     @NotEmpty
     @HalfWidthNumber
@@ -79,90 +79,90 @@ public class FlightUpdateDto implements ItemCountAware {
     private String vacantNumStr;
 
     /**
-     * 搭乗日(�?字�??) を取得する�??
+     * 搭乗日(文字列) を取得する。
      * 
-     * @return 搭乗日(�?字�??)
+     * @return 搭乗日(文字列)
      */
     public String getDepartureDateStr() {
         return departureDateStr;
     }
 
     /**
-     * 搭乗日(�?字�??) を設定する�??
+     * 搭乗日(文字列) を設定する。
      * 
-     * @param departureDateStr 搭乗日(�?字�??)
+     * @param departureDateStr 搭乗日(文字列)
      */
     public void setDepartureDateStr(String departureDateStr) {
         this.departureDateStr = departureDateStr;
     }
 
     /**
-     * 便�? を取得する�??
+     * 便名 を取得する。
      * 
-     * @return 便�?
+     * @return 便名
      */
     public String getFlightName() {
         return flightName;
     }
 
     /**
-     * 便�? を設定する�??
+     * 便名 を設定する。
      * 
-     * @param flightName 便�?
+     * @param flightName 便名
      */
     public void setFlightName(String flightName) {
         this.flightName = flightName;
     }
 
     /**
-     * 搭乗クラスコー�? を取得する�??
+     * 搭乗クラスコード を取得する。
      * 
-     * @return 搭乗クラスコー�?
+     * @return 搭乗クラスコード
      */
     public String getBoardingClassCd() {
         return boardingClassCd;
     }
 
     /**
-     * 搭乗クラスコー�? を設定する�??
+     * 搭乗クラスコード を設定する。
      * 
-     * @param boardingClassCd 搭乗クラスコー�?
+     * @param boardingClassCd 搭乗クラスコード
      */
     public void setBoardingClassCd(String boardingClassCd) {
         this.boardingClassCd = boardingClassCd;
     }
 
     /**
-     * 運�?種別コー�? を取得する�??
+     * 運賃種別コード を取得する。
      * 
-     * @return 運�?種別コー�?
+     * @return 運賃種別コード
      */
     public String getFareTypeCd() {
         return fareTypeCd;
     }
 
     /**
-     * 運�?種別コー�? を設定する�??
+     * 運賃種別コード を設定する。
      * 
-     * @param fareTypeCd 運�?種別コー�?
+     * @param fareTypeCd 運賃種別コード
      */
     public void setFareTypeCd(String fareTypeCd) {
         this.fareTypeCd = fareTypeCd;
     }
 
     /**
-     * 空席数(�?字�??) を取得する�??
+     * 空席数(文字列) を取得する。
      * 
-     * @return 空席数(�?字�??)
+     * @return 空席数(文字列)
      */
     public String getVacantNumStr() {
         return vacantNumStr;
     }
 
     /**
-     * 空席数(�?字�??) を設定する�??
+     * 空席数(文字列) を設定する。
      * 
-     * @param vacantNumStr 空席数(�?字�??)
+     * @param vacantNumStr 空席数(文字列)
      */
     public void setVacantNumStr(String vacantNumStr) {
         this.vacantNumStr = vacantNumStr;
@@ -177,7 +177,7 @@ public class FlightUpdateDto implements ItemCountAware {
     }
 
     /**
-     * エラーになったデータのレコード番号を取得する�??
+     * エラーになったデータのレコード番号を取得する。
      * 
      * @return エラーになったデータのレコード番号
      */
@@ -186,7 +186,7 @@ public class FlightUpdateDto implements ItemCountAware {
     }
 
     /**
-     * エラーになったデータのレコード番号を設定する�??
+     * エラーになったデータのレコード番号を設定する。
      * 
      * @param count エラーになったデータのレコード番号
      */
