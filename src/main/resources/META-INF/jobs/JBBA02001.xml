@@ -9,7 +9,6 @@
 
   <import resource="classpath:META-INF/spring/job-base-context.xml" />
 
-  <context:annotation-config />
   <context:component-scan base-package="jp.co.ntt.atrs.batch.jbba02001,jp.co.ntt.atrs.batch.common.listener" />
 
   <!-- DAO設定 -->
