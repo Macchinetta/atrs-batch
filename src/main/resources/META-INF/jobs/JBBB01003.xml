@@ -7,7 +7,7 @@
              http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
 
   <import resource="classpath:META-INF/spring/job-base-context.xml" />
-  <context:annotation-config />
+
   <!-- コンポーネントスキャン設定 -->
   <context:component-scan base-package="jp.co.ntt.atrs.batch.jbbb01003,jp.co.ntt.atrs.batch.common.listener" />
 

@@ -9,7 +9,7 @@
              http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 
   <import resource="classpath:META-INF/spring/job-base-context.xml" />
-  <context:annotation-config />
+
   <!-- コンポーネントスキャン設定 -->
   <context:component-scan base-package="jp.co.ntt.atrs.batch.jbbb01002,jp.co.ntt.atrs.batch.common.listener" />
 
