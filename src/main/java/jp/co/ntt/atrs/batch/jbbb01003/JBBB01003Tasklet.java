@@ -16,6 +16,7 @@
  */
 package jp.co.ntt.atrs.batch.jbbb01003;
 
+import jp.co.ntt.atrs.batch.common.constant.Constant;
 import jp.co.ntt.atrs.batch.common.exception.AtrsBatchException;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto;
@@ -125,7 +126,7 @@ public class JBBB01003Tasklet implements Tasklet {
         AggregationPeriodDto aggregationPeriod = AggregationPeriodUtil.create(firstDateStr, lastDateStr);
         if (aggregationPeriod == null) {
             // ジョブ終了コード（100:異常終了）
-            contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
+            contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
             return RepeatStatus.FINISHED;
         }
 
@@ -158,7 +159,7 @@ public class JBBB01003Tasklet implements Tasklet {
 
                     // 入力チェックエラー（100:異常終了）
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
-                    contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
+                    contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
                     return RepeatStatus.FINISHED;
                 }
 
@@ -171,7 +172,7 @@ public class JBBB01003Tasklet implements Tasklet {
                 } catch (Exception e) {
                     // ファイル書込みエラー（100:異常終了）
                     LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(outputFilePath), e);
-                    contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
+                    contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
                     return RepeatStatus.FINISHED;
                 }
 

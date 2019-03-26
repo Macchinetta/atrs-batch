@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.atrs.batch</groupId>
     <artifactId>atrs-batch</artifactId>
-    <version>2.1.0.RELEASE</version>
+    <version>2.1.1.RELEASE</version>
 
     <name>${project.artifactId}</name>
     <description>ATRS Batch Project using Macchinetta Batch Framework (2.x)</description>
@@ -33,80 +33,105 @@
     </repositories>
 
     <properties>
-        <jdk.version>1.8</jdk.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <io.spring.platform.version>Cairo-SR3</io.spring.platform.version>
-        <terasoluna-batch.version>5.2.0.RC1</terasoluna-batch.version>
-
-        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
-        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+        <!-- == Maven Plugin Versions == -->
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
-        
-        <dozer.version>5.5.1</dozer.version>
         <org.codehaus.mojo.sql-maven-plugin.version>1.5</org.codehaus.mojo.sql-maven-plugin.version>
-        <postgresql.version>42.2.4</postgresql.version>
+
+        <!-- == Dependency Versions == -->
+        <!-- == Spring Boot Dependencies == -->
+        <org.springframework.boot.version>2.1.2.RELEASE</org.springframework.boot.version>
+        
+        <!-- == TERASOLUNA Batch == -->
+        <terasoluna-batch.version>5.2.1.RELEASE</terasoluna-batch.version>
+        
+        <!-- == Dozer == -->
+        <dozer.version>5.5.1</dozer.version>
+        
+        <!-- == Project Properties == -->
+        <java-version>1.8</java-version>
+        <postgresql.version>42.2.5</postgresql.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- == Begin Spring Boot Dependencies == -->
             <dependency>
-                <groupId>io.spring.platform</groupId>
-                <artifactId>platform-bom</artifactId>
-                <version>${io.spring.platform.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${org.springframework.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- == End Spring Boot Dependencies == -->
+            
+            <!-- == Begin TERASOLUNA Batch -->
             <dependency>
                 <groupId>org.terasoluna.batch</groupId>
                 <artifactId>terasoluna-batch</artifactId>
                 <version>${terasoluna-batch.version}</version>
             </dependency>
+            <!-- == End TERASOLUNA Batch -->
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+    	<!-- == Begin TERASOLUNA Batch == -->
         <dependency>
             <groupId>org.terasoluna.batch</groupId>
             <artifactId>terasoluna-batch</artifactId>
         </dependency>
+        <!-- == End TERASOLUNA Batch -->
 
+        <!-- == Begin Hibernate Validator == -->
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
+        <!-- == End Hibernate Validator == -->
 
+        <!-- == Begin Expression Language == -->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- == End Expression Language == -->
 
+        <!-- == Begin Logback == -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- == End Logback == -->
 
+        <!-- == Begin H2 Database Engine == -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- == End H2 Database Engine == -->
 
+        <!-- == Begin PosgreSQL JDBC Driver == -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-        
+        <!-- == End PosgreSQL JDBC Driver == -->
+
+        <!-- == Begin Apache Commons Lang == -->
         <dependency>
         	<groupId>org.apache.commons</groupId>
         	<artifactId>commons-lang3</artifactId>
-        	<version>3.4</version>
         </dependency>
-        
-        <!-- == Begin Dozer== -->
+        <!-- == End Apache Commons Lang == -->
+
+        <!-- == Begin Dozer == -->
         <dependency>
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
@@ -131,8 +156,8 @@
             <artifactId>dozer-spring</artifactId>
             <version>${dozer.version}</version>
         </dependency>
-        <!-- == End Dozer== -->
-        
+        <!-- == End Dozer == -->
+
         <!-- == Begin Joda-Time == -->
         <dependency>
             <groupId>joda-time</groupId>
@@ -185,10 +210,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
-                    <testSource>${jdk.version}</testSource>
-                    <testTarget>${jdk.version}</testTarget>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                    <testSource>${java-version}</testSource>
+                    <testTarget>${java-version}</testTarget>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
@@ -275,6 +300,16 @@
                 <db.artifactId>postgresql</db.artifactId>
                 <db.version>${postgresql.version}</db.version>
                 <db.delimiterType>row</db.delimiterType>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>jdk11</id>
+            <activation>
+                <jdk>11</jdk>
+            </activation>
+            <properties>
+                <java-version>11</java-version>
             </properties>
         </profile>
     </profiles>

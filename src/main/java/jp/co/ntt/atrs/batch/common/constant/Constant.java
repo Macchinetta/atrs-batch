@@ -14,28 +14,13 @@
  * limitations under the License.
  *
  */
-package jp.co.ntt.atrs.batch.common.exception;
+package jp.co.ntt.atrs.batch.common.constant;
 
-public class BatchException extends RuntimeException {
+/**
+ * 定数クラス
+ */
+public class Constant {
 
-    /**
-     * シリアルバージョンID
-     */
-    private static final long serialVersionUID = -3410319869928153997L;
+    public static final String BUSINESS_ERROR = "BUSINESS_ERROR";
 
-    public BatchException() {
-    	// do nothing.
-    }
-
-    public BatchException(String message) {
-        super(message);
-    }
-
-    public BatchException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public BatchException(Throwable cause) {
-        super(cause);
-    }
 }

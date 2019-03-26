@@ -16,6 +16,7 @@
  */
 package jp.co.ntt.atrs.batch.jbbb01001;
 
+import jp.co.ntt.atrs.batch.common.constant.Constant;
 import jp.co.ntt.atrs.batch.common.exception.AtrsBatchException;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto;
@@ -133,7 +134,7 @@ public class JBBB01001Tasklet implements Tasklet {
 
         if (aggregationPeriod == null) {
             // 集計期間の取得で例外（100:異常終了）
-            contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
+            contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
             return RepeatStatus.FINISHED;
         }
 
@@ -145,106 +146,13 @@ public class JBBB01001Tasklet implements Tasklet {
             executionContext.put("firstDate", aggregationPeriod.getFirstDate());
             executionContext.put("lastDate", aggregationPeriod.getLastDate());
 
-            // 入力ファイルオープン
-            reservationResultReader.open(executionContext);
+            // すべての出力データを処理し、出力件数を設定する
+            Integer dataCount = processData(executionContext,contribution,outputLineCountMap);
 
-            // 出力件数
-            int dataCount = 0;
-            int outputLineCount = 0;
-
-            // 処理中の出力先ファイルパス
-            Path outputFile = Paths.get(userDir, PATH_RESERVATION_DATA);
-
-            // コントロールブレイクの処理結果を含めたグループ単位のレコードを格納する
-            List<ReservationDto> items = new ArrayList<>();
-
-            // 次要素にデータが存在するまで処理を繰り返す
-            while (reservationResultReader.peek() != null) {
-                dataCount++;
-                outputLineCount++;
-
-                // 予約情報を取得する
-                ReservationResultDto inputData = reservationResultReader.read();
-
-                // 入力チェックエラーハンドリング
-                try {
-                    validator.validate(inputData);
-                } catch (ValidationException e) {
-                    // FieldErrorsの個数分、以下の処理を繰り返す
-                    for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェックエラーメッセージを出力
-                        LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
-                                + "]" + "(" + inputData.toString() + ")");
-                    }
-
-                    // 入力チェックエラー（100:異常終了）
-                    LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
-                    contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
-                    return RepeatStatus.FINISHED;
-                }
-
-                // DTOの詰め替え処理
-                ReservationDto printData = beanMapper.map(inputData, ReservationDto.class);
-
-                items.add(printData);
-
-                // 次のレコードを先読みする
-                ReservationResultDto nextData = reservationResultReader.peek();
-
-                // 対象レコード処理後にコントロールブレイクを実施する
-                if (isBreakByReserveDate(nextData, inputData)) {
-                    // コントロールブレイクした値を取得し、出力ファイルネーム用に文字列変換する
-                    LocalDate ld = new LocalDate(inputData.getReserveDate());
-                    String outputDate = ld.toString("yyyyMMdd");
-
-                    // 出力ファイルパス
-                    String outputFilePath = MessageFormat.format(outputFile.toString(), outputDate);
-
-                    try {
-                        // 出力ファイルオープン
-                        reservationWriter.open(executionContext);
-
-                        // 書き込み
-                        reservationWriter.write(items);
-                        items.clear();
-
-                        // 各ファイルの出力件数を保持する
-                        outputLineCountMap.put(outputFilePath, outputLineCount);
-
-                        // 出力件数初期化
-                        outputLineCount = 0;
-                    } catch (ItemStreamException e) {
-                        // ファイルオープンエラー
-                        LOGGER.error(LogMessages.E_AR_FW_L9006.getMessage());
-                        throw new AtrsBatchException(e);
-                    } catch (Exception e) {
-                        // ファイル書込みエラー（100:異常終了）
-                        LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(), e);
-                        contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
-                        return RepeatStatus.FINISHED;
-                    } finally {
-                        try {
-                            // 出力ファイルクローズ
-                            reservationWriter.close();
-                        } catch (ItemStreamException e) {
-                            // クローズ失敗
-                            if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("クローズ失敗", e);
-                            }
-                        }
-                    }
-                    
-                    try {
-                        // リネーム
-                        Files.move(outputFile, Paths.get(outputFilePath));
-                    } catch (IOException e) {
-                        // ファイルリネーム失敗
-                        LOGGER.error(LogMessages.E_AR_FW_L9009.getMessage(outputFile.toString(), outputFilePath), e);
-                        throw new AtrsBatchException(e);
-                    }
-                }
+            // 出力件数がnullの場合、RepeatStatus.FINISHEDとする
+            if (dataCount == null) {
+                return RepeatStatus.FINISHED;
             }
-
             // 取得件数が0件の場合ログを出力する。
             if (dataCount == 0) {
                 LOGGER.warn(LogMessages.W_AR_BB01_L2001.getMessage());
@@ -276,6 +184,140 @@ public class JBBB01001Tasklet implements Tasklet {
         // ジョブ終了コード（0:正常終了）
         contribution.setExitStatus(new ExitStatus("NORMAL"));
         return RepeatStatus.FINISHED;
+    }
+
+    /**
+     * 対象要素の処理
+     * @param executionContext 実行コンテキスト
+     * @param contribution ステップ情報
+     * @param outputLineCountMap 出力ファイルパスと出力件数を保持するMap
+     * @return 正常に終了する場合：出力件数を返す それ以外のとき、例外をthrowするかnullを返す
+     */
+    private Integer processData(ExecutionContext executionContext,StepContribution contribution,Map<String, Integer> outputLineCountMap) throws Exception {
+
+        // 入力ファイルオープン
+        reservationResultReader.open(executionContext);
+
+        // 出力件数
+        int dataCount = 0;
+        int outputLineCount = 0;
+
+        // 処理中の出力先ファイルパス
+        Path outputFile = Paths.get(userDir, PATH_RESERVATION_DATA);
+
+        // コントロールブレイクの処理結果を含めたグループ単位のレコードを格納する
+        List<ReservationDto> items = new ArrayList<>();
+
+        // 次要素にデータが存在するまで処理を繰り返す
+        while (reservationResultReader.peek() != null) {
+            dataCount++;
+            outputLineCount++;
+
+            // 予約情報を取得する
+            ReservationResultDto inputData = reservationResultReader.read();
+
+            // 入力チェックエラーハンドリング
+            if (!doValidate(inputData, contribution)){
+                // チェックエラーがある場合
+                return null;
+            }
+
+            // DTOの詰め替え処理
+            ReservationDto printData = beanMapper.map(inputData, ReservationDto.class);
+
+            items.add(printData);
+
+            // 次のレコードを先読みする
+            ReservationResultDto nextData = reservationResultReader.peek();
+
+            // 対象レコード処理後にコントロールブレイクを実施する
+            if (isBreakByReserveDate(nextData, inputData)) {
+                // コントロールブレイクした値を取得し、出力ファイルネーム用に文字列変換する
+                LocalDate ld = new LocalDate(inputData.getReserveDate());
+                String outputDate = ld.toString("yyyyMMdd");
+
+                // 出力ファイルパス
+                String outputFilePath = MessageFormat.format(outputFile.toString(), outputDate);
+
+                try {
+                    // 出力ファイルオープン
+                    reservationWriter.open(executionContext);
+
+                    // 書き込み
+                    reservationWriter.write(items);
+                    items.clear();
+
+                    // 各ファイルの出力件数を保持する
+                    outputLineCountMap.put(outputFilePath, outputLineCount);
+
+                    // 出力件数初期化
+                    outputLineCount = 0;
+                } catch (ItemStreamException e) {
+                    // ファイルオープンエラー
+                    LOGGER.error(LogMessages.E_AR_FW_L9006.getMessage());
+                    throw new AtrsBatchException(e);
+                } catch (Exception e) {
+                    // ファイル書込みエラー（100:異常終了）
+                    LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(), e);
+                    contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
+                    return null;
+                } finally {
+                    closeWriter();
+                }
+
+                try {
+                    // リネーム
+                    Files.move(outputFile, Paths.get(outputFilePath));
+                } catch (IOException e) {
+                    // ファイルリネーム失敗
+                    LOGGER.error(LogMessages.E_AR_FW_L9009.getMessage(outputFile.toString(), outputFilePath), e);
+                    throw new AtrsBatchException(e);
+                }
+            }
+        }
+
+        // 出力件数初期化
+        return dataCount;
+    }
+
+    /**
+     * 入力データのチェックを行う
+     * @param inputData 入力データ
+     * @param contribution ステップ情報
+     * @return 正常終了の場合：true　Exceptionの場合：false
+     */
+    private boolean doValidate(ReservationResultDto inputData, StepContribution contribution){
+        try {
+            validator.validate(inputData);
+        } catch (ValidationException e) {
+            // FieldErrorsの個数分、以下の処理を繰り返す
+            for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
+                // 入力チェックエラーメッセージを出力
+                LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
+                        + "]" + "(" + inputData.toString() + ")");
+            }
+
+            // 入力チェックエラー（100:異常終了）
+            LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
+            contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 出力ファイルクローズ
+     */
+    private void closeWriter(){
+        try {
+            // 出力ファイルクローズ
+            reservationWriter.close();
+        } catch (ItemStreamException e) {
+            // クローズ失敗
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("クローズ失敗", e);
+            }
+        }
     }
 
     /**
