@@ -23,7 +23,7 @@ import jp.co.ntt.atrs.batch.common.validate.HalfWidthNumber;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 import org.springframework.batch.item.ItemCountAware;
 
 import javax.validation.constraints.Size;

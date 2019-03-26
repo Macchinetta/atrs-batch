@@ -294,7 +294,7 @@ public class JBBA02001Tasklet implements Tasklet {
             } catch (ItemStreamException e) {
                 // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失敗", e);
+                    LOGGER.debug(LogMessages.E_AR_BA02_L9001.getMessage(), e);
                 }
             }
         }
@@ -376,7 +376,7 @@ public class JBBA02001Tasklet implements Tasklet {
             } catch (ItemStreamException e) {
                 // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失敗", e);
+                    LOGGER.debug(LogMessages.E_AR_BA02_L9001.getMessage(), e);
                 }
             }
         }
@@ -459,7 +459,7 @@ public class JBBA02001Tasklet implements Tasklet {
             } catch (ItemStreamException e) {
                 // クローズ失敗
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失敗", e);
+                    LOGGER.debug(LogMessages.E_AR_BA02_L9001.getMessage(), e);
                 }
             }
         }

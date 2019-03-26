@@ -16,6 +16,7 @@
  */
 package jp.co.ntt.atrs.batch.jbbb01002;
 
+import jp.co.ntt.atrs.batch.common.constant.Constant;
 import jp.co.ntt.atrs.batch.common.exception.AtrsBatchException;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto;
@@ -132,7 +133,7 @@ public class JBBB01002Tasklet implements Tasklet {
 
         if (aggregationPeriod == null) {
             // 集計期間の取得で例外（100:異常終了）
-            contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
+            contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
             return RepeatStatus.FINISHED;
         }
 
@@ -161,20 +162,11 @@ public class JBBB01002Tasklet implements Tasklet {
                 RouteAggregationResultDto inputData = routeAggregationResultReader.read();
 
                 // 入力チェックエラーハンドリング
-                try {
-                    validator.validate(inputData);
-                } catch (ValidationException e) {
-                    // FieldErrorsの個数分、以下の処理を繰り返す
-                    for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
-                        // 入力チェックエラーメッセージを出力
-                        LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
-                                + "]" + "(" + inputData.toString() + ")");
-                    }
-                    // 入力チェックエラー（100:異常終了）
-                    LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
-                    contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
+                if (!doValidate(inputData, contribution)){
+                    // チェックエラーがある場合
                     return RepeatStatus.FINISHED;
                 }
+
                 // 席数（一般席・特別席）、搭乗者数をそれぞれ加算
                 totalNSeatNum += inputData.getNormalSeatNum();
                 totalSSeatNum += inputData.getSpecialSeatNum();
@@ -184,66 +176,45 @@ public class JBBB01002Tasklet implements Tasklet {
                 RouteAggregationResultDto nextdata = routeAggregationResultReader.peek();
 
                 // 次データと現在データを比較
-                if (isBreakByRouteNo(nextdata, inputData)) {
-
-                    // 搭乗者数の設定
-                    inputData.setPassengerNum(passengerCount);
-
-                    // 搭乗率計算
-                    BigDecimal totalSeatNum = new BigDecimal(totalNSeatNum).add(new BigDecimal(totalSSeatNum));
-                    BigDecimal passcount = new BigDecimal(passengerCount);
-                    BigDecimal loadFactor = passcount.multiply(new BigDecimal(100)).divide(totalSeatNum, 2,
-                            BigDecimal.ROUND_HALF_UP);
-
-                    // DTOの詰め替え処理
-                    RouteAggregationDto printData = beanMapper.map(inputData, RouteAggregationDto.class);
-
-                    // 搭乗率計の設定
-                    printData.setLoadFactor(loadFactor);
-
-                    // ファイル書き込み
-                    try {
-                        routeAggregationWriter.write(Arrays.asList(printData));
-                    } catch (Exception e) {
-                        // ファイル書込みエラー（100:異常終了）
-                        LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(), e);
-                        contribution.setExitStatus(new ExitStatus("BUSINESS_ERROR"));
-                        return RepeatStatus.FINISHED;
-                    }
-
-                    // 出力件数カウントアップ
-                    outputLineCount++;
-
-                    // 総座席数、搭乗者数リセット
-                    totalNSeatNum = 0;
-                    totalSSeatNum = 0;
-                    passengerCount = 0;
+                if (!isBreakByRouteNo(nextdata, inputData)) {
+                    continue;
                 }
+
+                // 搭乗者数の設定
+                inputData.setPassengerNum(passengerCount);
+
+                // 搭乗率計算
+                BigDecimal totalSeatNum = new BigDecimal(totalNSeatNum).add(new BigDecimal(totalSSeatNum));
+                BigDecimal passcount = new BigDecimal(passengerCount);
+                BigDecimal loadFactor = passcount.multiply(new BigDecimal(100)).divide(totalSeatNum, 2,
+                        BigDecimal.ROUND_HALF_UP);
+
+                // DTOの詰め替え処理
+                RouteAggregationDto printData = beanMapper.map(inputData, RouteAggregationDto.class);
+
+                // 搭乗率計の設定
+                printData.setLoadFactor(loadFactor);
+
+                // ファイル書き込み
+                if (!doWrite(printData, contribution)){
+                    // Exceptionの場合
+                    return RepeatStatus.FINISHED;
+                }
+
+                // 出力件数カウントアップ
+                outputLineCount++;
+
+                // 総座席数、搭乗者数リセット
+                totalNSeatNum = 0;
+                totalSSeatNum = 0;
+                passengerCount = 0;
             }
         } catch (ItemStreamException e) {
             // ファイルオープンエラー
             LOGGER.error(LogMessages.E_AR_FW_L9006.getMessage());
             throw new AtrsBatchException(e);
         } finally {
-            try {
-                // DB取得用readerクローズ
-                routeAggregationResultReader.close();
-            } catch (ItemStreamException e) {
-                // クローズ失敗
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失敗", e);
-                }
-            }
-
-            try {
-                // ファイルクローズ
-                routeAggregationWriter.close();
-            } catch (ItemStreamException e) {
-                // クローズ失敗
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失敗", e);
-                }
-            }
+            closeResource();
         }
 
         if (outputLineCount == 0) {
@@ -274,5 +245,72 @@ public class JBBB01002Tasklet implements Tasklet {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 入力データのチェックを行う
+     * @param inputData 入力データ
+     * @param contribution ステップ情報
+     * @return 正常終了の場合：true　Exceptionの場合：false
+     */
+    private boolean doValidate(RouteAggregationResultDto inputData, StepContribution contribution){
+        try {
+            validator.validate(inputData);
+        } catch (ValidationException e) {
+            // FieldErrorsの個数分、以下の処理を繰り返す
+            for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
+                // 入力チェックエラーメッセージを出力
+                LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
+                        + "]" + "(" + inputData.toString() + ")");
+            }
+            // 入力チェックエラー（100:異常終了）
+            LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
+            contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * ファイル書き込み
+     * @param printData DTOの詰め替え処理データ
+     * @param contribution ステップ情報
+     * @return 正常終了の場合：true　Exceptionの場合：false
+     */
+    private boolean doWrite(RouteAggregationDto printData, StepContribution contribution){
+        try {
+            routeAggregationWriter.write(Arrays.asList(printData));
+        } catch (Exception e) {
+            // ファイル書込みエラー（100:異常終了）
+            LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(), e);
+            contribution.setExitStatus(new ExitStatus(Constant.BUSINESS_ERROR));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * DB取得用reader及びファイルWriterをクローズ
+     */
+    private void closeResource(){
+        try {
+            // DB取得用readerクローズ
+            routeAggregationResultReader.close();
+        } catch (ItemStreamException e) {
+            // クローズ失敗
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("クローズ失敗", e);
+            }
+        }
+
+        try {
+            // ファイルクローズ
+            routeAggregationWriter.close();
+        } catch (ItemStreamException e) {
+            // クローズ失敗
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("クローズ失敗", e);
+            }
+        }
     }
 }
