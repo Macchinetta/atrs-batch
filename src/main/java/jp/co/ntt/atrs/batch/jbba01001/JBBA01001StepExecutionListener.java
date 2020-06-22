@@ -40,13 +40,13 @@ public class JBBA01001StepExecutionListener implements StepExecutionListener {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(
             JBBA01001StepExecutionListener.class);
-    
+
     /**
      * フライト情報更新ファイルパス
      */
     @Value("${path.FlightUpdate}")
     private String PATH_FLIGHT_UPDATE;
-    
+
     /**
      * ユーザーの現在の作業ディレクトリ。
      */
@@ -79,7 +79,7 @@ public class JBBA01001StepExecutionListener implements StepExecutionListener {
                 throw new AtrsBatchException(th);
             }
         }
-        
+
         // 登録件数を取得する。
         LOGGER.info(LogMessages.I_AR_BA01_L0001.getMessage(String.valueOf(stepExecution.getWriteCount())));
 

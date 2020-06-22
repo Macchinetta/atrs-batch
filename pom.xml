@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.atrs.batch</groupId>
     <artifactId>atrs-batch</artifactId>
-    <version>2.1.1.RELEASE</version>
+    <version>2.2.0.RELEASE</version>
 
     <name>${project.artifactId}</name>
     <description>ATRS Batch Project using Macchinetta Batch Framework (2.x)</description>
@@ -27,31 +27,43 @@
             </snapshots>
             <id>central</id>
             <name>Maven Central repository</name>
-            <url>http://repo1.maven.org/maven2/</url>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
 
     </repositories>
 
     <properties>
         <!-- == Maven Plugin Versions == -->
-        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-        <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
-        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+        <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
         <org.codehaus.mojo.sql-maven-plugin.version>1.5</org.codehaus.mojo.sql-maven-plugin.version>
 
         <!-- == Dependency Versions == -->
         <!-- == Spring Boot Dependencies == -->
-        <org.springframework.boot.version>2.1.2.RELEASE</org.springframework.boot.version>
-        
+        <org.springframework.boot.version>2.2.4.RELEASE</org.springframework.boot.version>
+
         <!-- == TERASOLUNA Batch == -->
-        <terasoluna-batch.version>5.2.1.RELEASE</terasoluna-batch.version>
-        
+        <terasoluna-batch.version>5.3.0.RELEASE</terasoluna-batch.version>
+
+        <!-- == Expression Language == -->
+        <javax.el.version>3.0.0</javax.el.version>
+
         <!-- == Dozer == -->
         <dozer.version>5.5.1</dozer.version>
-        
+
         <!-- == Project Properties == -->
         <java-version>1.8</java-version>
-        <postgresql.version>42.2.5</postgresql.version>
+        <db.encoding>UTF8</db.encoding>
+        <db.basedir>sql/postgres</db.basedir>
+        <db.url>jdbc:postgresql://127.0.0.1:5432/atrs_batch</db.url>
+        <db.username>postgres</db.username>
+        <db.password>postgres</db.password>
+        <db.driver>org.postgresql.Driver</db.driver>
+        <db.groupId>org.postgresql</db.groupId>
+        <db.artifactId>postgresql</db.artifactId>
+        <db.version>42.2.9</db.version>
+        <db.delimiterType>row</db.delimiterType>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -66,7 +78,7 @@
                 <scope>import</scope>
             </dependency>
             <!-- == End Spring Boot Dependencies == -->
-            
+
             <!-- == Begin TERASOLUNA Batch -->
             <dependency>
                 <groupId>org.terasoluna.batch</groupId>
@@ -74,11 +86,19 @@
                 <version>${terasoluna-batch.version}</version>
             </dependency>
             <!-- == End TERASOLUNA Batch -->
+
+            <!-- == Begin Expression Language == -->
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.el</artifactId>
+                <version>${javax.el.version}</version>
+            </dependency>
+            <!-- == End Expression Language == -->
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-    	<!-- == Begin TERASOLUNA Batch == -->
+        <!-- == Begin TERASOLUNA Batch == -->
         <dependency>
             <groupId>org.terasoluna.batch</groupId>
             <artifactId>terasoluna-batch</artifactId>
@@ -126,8 +146,8 @@
 
         <!-- == Begin Apache Commons Lang == -->
         <dependency>
-        	<groupId>org.apache.commons</groupId>
-        	<artifactId>commons-lang3</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
         <!-- == End Apache Commons Lang == -->
 
@@ -283,26 +303,7 @@
                 <exclude-log>logback.xml</exclude-log>
             </properties>
         </profile>
-        
-        <profile>
-            <id>local-postgres</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <db.encoding>UTF8</db.encoding>
-                <db.basedir>sql/postgres</db.basedir>
-                <db.url>jdbc:postgresql://127.0.0.1:5432/atrs_batch</db.url>
-                <db.username>postgres</db.username>
-                <db.password>postgres</db.password>
-                <db.driver>org.postgresql.Driver</db.driver>
-                <db.groupId>org.postgresql</db.groupId>
-                <db.artifactId>postgresql</db.artifactId>
-                <db.version>${postgresql.version}</db.version>
-                <db.delimiterType>row</db.delimiterType>
-            </properties>
-        </profile>
-        
+
         <profile>
             <id>jdk11</id>
             <activation>

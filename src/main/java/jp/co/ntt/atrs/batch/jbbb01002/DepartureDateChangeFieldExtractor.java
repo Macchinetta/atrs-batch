@@ -29,13 +29,11 @@ public class DepartureDateChangeFieldExtractor implements FieldExtractor<RouteAg
 
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
-        Object[] values = new Object[5];
-
-        values[0] = dateFormat.format(item.getDepartureDate());
-        values[1] = item.getDepAirport();
-        values[2] = item.getArrAirport();
-        values[3] = item.getPassengerNum();
-        values[4] = item.getLoadFactor();
+        Object[] values = { dateFormat.format(item.getDepartureDate()),
+                item.getDepAirport(),
+                item.getArrAirport(),
+                item.getPassengerNum(),
+                item.getLoadFactor() };
 
         return values;
     }

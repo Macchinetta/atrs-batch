@@ -8,13 +8,13 @@ DECLARE
 
   -- 登録する年数
   addingYear INT := 2;
-  
+
   i INT;
-  
+
 BEGIN
   i := 0;
   WHILE i < addingYear LOOP
-    
+
     INSERT INTO PEAK_TIME (PEAK_TIME_CD, PEAK_START_DATE, PEAK_END_DATE, MULTIPLICATION_RATIO) VALUES('PEAK1', to_date(currentYear || '/01/01', 'YYYY/MM/DD'), to_date(currentYear || '/01/05', 'YYYY/MM/DD'), 140);
     INSERT INTO PEAK_TIME (PEAK_TIME_CD, PEAK_START_DATE, PEAK_END_DATE, MULTIPLICATION_RATIO) VALUES('PEAK1', to_date(currentYear || '/03/20', 'YYYY/MM/DD'), to_date(currentYear || '/03/31', 'YYYY/MM/DD'), 140);
     INSERT INTO PEAK_TIME (PEAK_TIME_CD, PEAK_START_DATE, PEAK_END_DATE, MULTIPLICATION_RATIO) VALUES('PEAK1', to_date(currentYear || '/08/08', 'YYYY/MM/DD'), to_date(currentYear || '/08/18', 'YYYY/MM/DD'), 140);

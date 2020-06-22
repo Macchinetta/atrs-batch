@@ -38,7 +38,7 @@ public class JBBA01001JobExecutionListener implements JobExecutionListener {
      * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(JBBA01001JobExecutionListener.class);
-    
+
     /**
      * フライト情報更新ファイルパス
      */
@@ -56,7 +56,7 @@ public class JBBA01001JobExecutionListener implements JobExecutionListener {
      */
     @Value("${user.dir}")
     private String userDir;
-    
+
     @Override
     public void beforeJob(JobExecution jobExecution) {
         // do nothing.
@@ -69,7 +69,7 @@ public class JBBA01001JobExecutionListener implements JobExecutionListener {
             // 入出力ファイルのパスを取得
             Path inputFile = Paths.get(userDir, PATH_FLIGHT_UPDATE);
             Path outputFile = Paths.get(userDir, PATH_RENAME_FLIGHT_UPDATE);
-            
+
             try {
                 // フライト情報更新ファイルのリネーム
                 Files.move(inputFile, outputFile);

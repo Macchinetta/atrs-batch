@@ -189,9 +189,7 @@ public class JBBB01003Tasklet implements Tasklet {
                 fareTypeAggregationWriter.close();
             } catch (ItemStreamException e) {
                 // クローズ失敗
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失敗", e);
-                }
+                LOGGER.debug("クローズ失敗", e);
             }
         }
 

@@ -29,14 +29,12 @@ public class ReserveFlightBackupDtoDateChangeFieldExtractor implements FieldExtr
 
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
-        Object[] values = new Object[6];
-
-        values[0] = item.getReserveFlightNo();
-        values[1] = item.getReserveNo();
-        values[2] = dateFormat.format(item.getDepartureDate());
-        values[3] = item.getFlightName();
-        values[4] = item.getBoardingClassCd();
-        values[5] = item.getFareTypeCd();
+        Object[] values = { item.getReserveFlightNo(),
+                item.getReserveNo(),
+                dateFormat.format(item.getDepartureDate()),
+                item.getFlightName(),
+                item.getBoardingClassCd(),
+                item.getFareTypeCd() };
 
         return values;
     }

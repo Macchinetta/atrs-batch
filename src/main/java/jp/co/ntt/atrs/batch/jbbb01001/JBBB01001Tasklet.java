@@ -170,9 +170,7 @@ public class JBBB01001Tasklet implements Tasklet {
                 reservationResultReader.close();
             } catch (ItemStreamException e) {
                 // クローズ失敗
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("クローズ失敗", e);
-                }
+                LOGGER.debug("クローズ失敗", e);
             }
         }
 
@@ -314,9 +312,7 @@ public class JBBB01001Tasklet implements Tasklet {
             reservationWriter.close();
         } catch (ItemStreamException e) {
             // クローズ失敗
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("クローズ失敗", e);
-            }
+            LOGGER.debug("クローズ失敗", e);
         }
     }
 

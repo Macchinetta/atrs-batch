@@ -29,13 +29,11 @@ public class FlightBackupDtoDateChangeFieldExtractor implements FieldExtractor<F
 
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
-        Object[] values = new Object[5];
-
-        values[0] = dateFormat.format(item.getDepartureDate());
-        values[1] = item.getFlightName();
-        values[2] = item.getBoardingClassCd();
-        values[3] = item.getFareTypeCd();
-        values[4] = item.getVacantNum();
+        Object[] values = { dateFormat.format(item.getDepartureDate()),
+                item.getFlightName(),
+                item.getBoardingClassCd(),
+                item.getFareTypeCd(),
+                item.getVacantNum() };
 
         return values;
     }

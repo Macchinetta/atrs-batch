@@ -42,7 +42,7 @@ public class JBBA01001ItemProcessor implements
      * メッセージ出力に利用するログ機能を提供するインタフェース。
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(
-    		JBBA01001ItemProcessor.class);
+            JBBA01001ItemProcessor.class);
 
     /**
      * 入力チェック用のバリデータ。
@@ -81,10 +81,10 @@ public class JBBA01001ItemProcessor implements
             LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
             throw new AtrsBatchException(e);
         }
-        
+
         // DTOの詰め替え処理
         FlightDto flightDto = beanMapper.map(item, FlightDto.class);
-        
+
         try {
             // 日付型変換
             flightDto.setDepartureDate(DateUtil.convertDate(item.getDepartureDateStr()));
@@ -97,7 +97,7 @@ public class JBBA01001ItemProcessor implements
             LOGGER.error(LogMessages.E_AR_FW_L9005.getMessage(), e);
             throw new AtrsBatchException(e);
         }
-        
+
         // フライト情報を登録する
         return flightDto;
     }

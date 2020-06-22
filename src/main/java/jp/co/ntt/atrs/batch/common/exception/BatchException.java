@@ -24,7 +24,7 @@ public class BatchException extends RuntimeException {
     private static final long serialVersionUID = -3410319869928153997L;
 
     public BatchException() {
-    	// do nothing.
+        // do nothing.
     }
 
     public BatchException(String message) {

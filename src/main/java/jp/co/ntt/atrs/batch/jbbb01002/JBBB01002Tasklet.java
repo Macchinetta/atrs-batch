@@ -44,6 +44,7 @@ import org.springframework.batch.item.validator.ValidationException;
 import org.springframework.batch.item.validator.Validator;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -74,7 +75,7 @@ public class JBBB01002Tasklet implements Tasklet {
      */
     @Inject
     MessageSource messageSource;
-    
+
     /**
      * DB取得後のデータ操作機能で提供する処理のインターフェース。
      */
@@ -187,7 +188,7 @@ public class JBBB01002Tasklet implements Tasklet {
                 BigDecimal totalSeatNum = new BigDecimal(totalNSeatNum).add(new BigDecimal(totalSSeatNum));
                 BigDecimal passcount = new BigDecimal(passengerCount);
                 BigDecimal loadFactor = passcount.multiply(new BigDecimal(100)).divide(totalSeatNum, 2,
-                        BigDecimal.ROUND_HALF_UP);
+                        RoundingMode.HALF_UP);
 
                 // DTOの詰め替え処理
                 RouteAggregationDto printData = beanMapper.map(inputData, RouteAggregationDto.class);
@@ -241,10 +242,7 @@ public class JBBB01002Tasklet implements Tasklet {
      */
     private boolean isBreakByRouteNo(RouteAggregationResultDto nextdata, RouteAggregationResultDto inputData) {
         // 次データがnullの場合、または次データと現在データが一致しない場合はtrueを返す
-        if (nextdata == null || (!nextdata.getRouteNo().equals(inputData.getRouteNo()))) {
-            return true;
-        }
-        return false;
+        return nextdata == null || !nextdata.getRouteNo().equals(inputData.getRouteNo());
     }
 
     /**
@@ -298,9 +296,7 @@ public class JBBB01002Tasklet implements Tasklet {
             routeAggregationResultReader.close();
         } catch (ItemStreamException e) {
             // クローズ失敗
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("クローズ失敗", e);
-            }
+            LOGGER.debug("クローズ失敗", e);
         }
 
         try {
@@ -308,9 +304,7 @@ public class JBBB01002Tasklet implements Tasklet {
             routeAggregationWriter.close();
         } catch (ItemStreamException e) {
             // クローズ失敗
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("クローズ失敗", e);
-            }
+            LOGGER.debug("クローズ失敗", e);
         }
     }
 }

@@ -29,12 +29,10 @@ public class DepartureDateChangeFieldExtractor implements FieldExtractor<FareTyp
 
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
-        Object[] values = new Object[4];
-
-        values[0] = dateFormat.format(item.getDepartureDate());
-        values[1] = item.getFlightName();
-        values[2] = item.getFareTypeName();
-        values[3] = item.getPassengerNum();
+        Object[] values = { dateFormat.format(item.getDepartureDate()),
+                item.getFlightName(),
+                item.getFareTypeName(),
+                item.getPassengerNum() };
 
         return values;
     }

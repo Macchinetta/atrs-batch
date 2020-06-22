@@ -380,7 +380,7 @@ public class JBBA02001Tasklet implements Tasklet {
                 }
             }
         }
-        
+
         try {
             // リネーム
             Files.move(Paths.get(fileName), Paths.get(newFileName));
@@ -463,7 +463,7 @@ public class JBBA02001Tasklet implements Tasklet {
                 }
             }
         }
-        
+
         try {
             // リネーム
             Files.move(Paths.get(fileName), Paths.get(newFileName));

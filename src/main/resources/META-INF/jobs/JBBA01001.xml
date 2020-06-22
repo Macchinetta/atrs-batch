@@ -3,18 +3,18 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
     xmlns:batch="http://www.springframework.org/schema/batch" xmlns:p="http://www.springframework.org/schema/p"
     xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-             http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+    xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+             http://www.springframework.org/schema/batch https://www.springframework.org/schema/batch/spring-batch.xsd
              http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 
     <import resource="classpath:META-INF/spring/job-base-context.xml" />
 
     <context:component-scan
         base-package="jp.co.ntt.atrs.batch.jbba01001,jp.co.ntt.atrs.batch.common.listener" />
-    
-    <mybatis:scan base-package="jp.co.ntt.atrs.batch.jbba01001" factory-ref="jobSqlSessionFactory"/>    
-    
+
+    <mybatis:scan base-package="jp.co.ntt.atrs.batch.jbba01001" factory-ref="jobSqlSessionFactory"/>
+
     <bean id="reader"
         class="org.springframework.batch.item.file.FlatFileItemReader"
         p:resource="file:${user.dir}/${path.FlightUpdate}"
@@ -36,12 +36,12 @@
             </bean>
         </property>
     </bean>
-    
+
     <bean id="writer"
           class="org.mybatis.spring.batch.MyBatisBatchItemWriter"
           p:statementId="jp.co.ntt.atrs.batch.jbba01001.JBBA01001BatchDao.insertFlight"
           p:sqlSessionTemplate-ref="batchModeSqlSessionTemplate"/>
-    
+
     <batch:job id="JBBA01001" job-repository="jobRepository">
         <batch:step id="JBBA01001.step01">
             <batch:tasklet transaction-manager="jobTransactionManager">
@@ -60,5 +60,5 @@
             <batch:listener ref="jobLoggingListener" />
         </batch:listeners>
     </batch:job>
-    
+
 </beans>
