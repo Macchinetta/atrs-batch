@@ -129,7 +129,7 @@
     <bean id="jobResourcelessTransactionManager"
           class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>
 
-    <bean class="org.dozer.spring.DozerBeanMapperFactoryBean">
+    <bean class="com.github.dozermapper.spring.DozerBeanMapperFactoryBean">
         <property name="mappingFiles"
             value="classpath*:/META-INF/dozer/**/*-mapping.xml" />
     </bean>
