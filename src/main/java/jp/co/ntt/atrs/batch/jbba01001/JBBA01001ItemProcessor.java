@@ -18,7 +18,7 @@ package jp.co.ntt.atrs.batch.jbba01001;
 
 import javax.inject.Inject;
 
-import org.dozer.Mapper;
+import com.github.dozermapper.core.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
