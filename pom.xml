@@ -62,7 +62,7 @@
         <db.driver>org.postgresql.Driver</db.driver>
         <db.groupId>org.postgresql</db.groupId>
         <db.artifactId>postgresql</db.artifactId>
-        <db.version>42.2.9</db.version>
+        <db.version>42.2.25</db.version>
         <db.delimiterType>row</db.delimiterType>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
