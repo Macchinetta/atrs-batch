@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.atrs.batch</groupId>
     <artifactId>atrs-batch</artifactId>
-    <version>2.3.1.RELEASE</version>
+    <version>2.3.2.RELEASE</version>
 
     <name>${project.artifactId}</name>
     <description>ATRS Batch Project using Macchinetta Batch Framework (2.x)</description>
@@ -40,13 +40,13 @@
 
         <!-- == Dependency Versions == -->
         <!-- == Spring Boot Dependencies == -->
-        <org.springframework.boot.version>2.6.1</org.springframework.boot.version>
+        <org.springframework.boot.version>2.7.7</org.springframework.boot.version>
 
         <!-- == TERASOLUNA Batch == -->
-        <terasoluna-batch.version>5.4.1.RELEASE</terasoluna-batch.version>
+        <terasoluna-batch.version>5.4.2.RELEASE</terasoluna-batch.version>
 
         <!-- == Joda-Time == -->
-        <joda-time.joda-time.version>2.10.12</joda-time.joda-time.version>
+        <joda-time.joda-time.version>2.12.2</joda-time.joda-time.version>
 
         <!-- == Dozer == -->
         <dozer.version>6.5.2</dozer.version>
@@ -61,7 +61,7 @@
         <db.driver>org.postgresql.Driver</db.driver>
         <db.groupId>org.postgresql</db.groupId>
         <db.artifactId>postgresql</db.artifactId>
-        <db.version>42.3.1</db.version>
+        <db.version>42.5.1</db.version>
         <db.delimiterType>row</db.delimiterType>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -106,6 +106,14 @@
                 <version>${joda-time.joda-time.version}</version>
             </dependency>
             <!-- == End Joda-Time == -->
+
+            <!-- == Begin PostgreSQL == -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${db.version}</version>
+            </dependency>
+            <!-- == End PostgreSQL == -->
         </dependencies>
     </dependencyManagement>
 
