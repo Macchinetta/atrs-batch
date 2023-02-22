@@ -19,10 +19,10 @@ package jp.co.ntt.atrs.batch.jbbb01003;
 import jp.co.ntt.atrs.batch.common.constant.Constant;
 import jp.co.ntt.atrs.batch.common.exception.AtrsBatchException;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
+import jp.co.ntt.atrs.batch.common.mapstruct.FareTypeAggregationResultDtoMapper;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodUtil;
 
-import com.github.dozermapper.core.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamWriter;
 import org.springframework.batch.item.validator.ValidationException;
@@ -45,7 +46,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * 集計期間内の運賃種別搭乗者情報をCSVファイルに出力する。
@@ -85,10 +86,10 @@ public class JBBB01003Tasklet implements Tasklet {
     JBBB01003Dao dao;
 
     /**
-     * Beanマッパー。
+     * FareTypeAggregationResultDto変換用Beanマッパー。
      */
     @Inject
-    Mapper beanMapper;
+    FareTypeAggregationResultDtoMapper fareTypeAggregationResultDtoMapper;
 
     /**
      * ジョブパラメータ 集計開始日
@@ -164,11 +165,11 @@ public class JBBB01003Tasklet implements Tasklet {
                 }
 
                 // DTOの詰め替え処理
-                FareTypeAggregationDto printData = beanMapper.map(inputData, FareTypeAggregationDto.class);
+                FareTypeAggregationDto printData = fareTypeAggregationResultDtoMapper.map(inputData);
 
                 // ファイル書き込み
                 try {
-                    fareTypeAggregationWriter.write(Arrays.asList(printData));
+                    fareTypeAggregationWriter.write(new Chunk(Arrays.asList(printData)));
                 } catch (Exception e) {
                     // ファイル書込みエラー（100:異常終了）
                     LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(outputFilePath), e);

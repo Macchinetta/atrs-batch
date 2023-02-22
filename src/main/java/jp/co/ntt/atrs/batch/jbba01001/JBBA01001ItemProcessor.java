@@ -16,9 +16,8 @@
  */
 package jp.co.ntt.atrs.batch.jbba01001;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
-import com.github.dozermapper.core.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -31,6 +30,7 @@ import org.springframework.validation.FieldError;
 
 import jp.co.ntt.atrs.batch.common.exception.AtrsBatchException;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
+import jp.co.ntt.atrs.batch.common.mapstruct.FlightUpdateDtoMapper;
 import jp.co.ntt.atrs.batch.common.util.DateUtil;
 import jp.co.ntt.atrs.batch.jbba00.FlightDto;
 
@@ -57,10 +57,10 @@ public class JBBA01001ItemProcessor implements
     MessageSource messageSource;
 
     /**
-     * Beanマッパー。
+     * FlightUpdateDto変換用Beanマッパー。
      */
     @Inject
-    Mapper beanMapper;
+    FlightUpdateDtoMapper flightUpdateDtoMapper;
 
     @Override
     public FlightDto process(FlightUpdateDto item) throws Exception {
@@ -83,7 +83,7 @@ public class JBBA01001ItemProcessor implements
         }
 
         // DTOの詰め替え処理
-        FlightDto flightDto = beanMapper.map(item, FlightDto.class);
+        FlightDto flightDto = flightUpdateDtoMapper.map(item);
 
         try {
             // 日付型変換

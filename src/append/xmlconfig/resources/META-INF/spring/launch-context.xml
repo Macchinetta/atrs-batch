@@ -14,7 +14,6 @@
             http://www.springframework.org/schema/jdbc https://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
     <context:property-placeholder location="classpath*:**/*.properties"
-            system-properties-mode="OVERRIDE"
             ignore-resource-not-found="false"
             ignore-unresolvable="true"
             order="1"/>
@@ -43,9 +42,10 @@
     <bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry"/>
 
     <bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean"
-          p:dataSource-ref="adminDataSource"/>
+          p:dataSource-ref="adminDataSource"
+          p:transactionManager-ref="adminTransactionManager"/>
 
-    <bean id="jobParametersConverter" class="org.springframework.batch.core.jsr.JsrJobParametersConverter"
+    <bean id="jobParametersConverter" class="org.terasoluna.batch.converter.JobParametersConverterImpl"
           c:dataSource-ref="adminDataSource" />
 
     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"
@@ -129,8 +129,4 @@
     <bean id="jobResourcelessTransactionManager"
           class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>
 
-    <bean class="com.github.dozermapper.spring.DozerBeanMapperFactoryBean">
-        <property name="mappingFiles"
-            value="classpath*:/META-INF/dozer/**/*-mapping.xml" />
-    </bean>
 </beans>

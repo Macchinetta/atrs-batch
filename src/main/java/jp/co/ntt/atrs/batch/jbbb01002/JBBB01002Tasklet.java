@@ -19,10 +19,10 @@ package jp.co.ntt.atrs.batch.jbbb01002;
 import jp.co.ntt.atrs.batch.common.constant.Constant;
 import jp.co.ntt.atrs.batch.common.exception.AtrsBatchException;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
+import jp.co.ntt.atrs.batch.common.mapstruct.RouteAggregationResultDtoMapper;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodUtil;
 
-import com.github.dozermapper.core.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamWriter;
@@ -49,7 +50,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * 集計期間内の区間搭乗者情報をCSVファイルに出力する。
@@ -89,10 +90,10 @@ public class JBBB01002Tasklet implements Tasklet {
     ItemStreamWriter<RouteAggregationDto> routeAggregationWriter;
 
     /**
-     * Beanマッパー。
+     * RouteAggregationResultDto変換用Beanマッパー。
      */
     @Inject
-    Mapper beanMapper;
+    RouteAggregationResultDtoMapper routeAggregationResultDtoMapper;
 
     /**
      * ジョブパラメータ 集計開始日
@@ -191,7 +192,7 @@ public class JBBB01002Tasklet implements Tasklet {
                         RoundingMode.HALF_UP);
 
                 // DTOの詰め替え処理
-                RouteAggregationDto printData = beanMapper.map(inputData, RouteAggregationDto.class);
+                RouteAggregationDto printData = routeAggregationResultDtoMapper.map(inputData);
 
                 // 搭乗率計の設定
                 printData.setLoadFactor(loadFactor);
@@ -277,7 +278,7 @@ public class JBBB01002Tasklet implements Tasklet {
      */
     private boolean doWrite(RouteAggregationDto printData, StepContribution contribution){
         try {
-            routeAggregationWriter.write(Arrays.asList(printData));
+            routeAggregationWriter.write(new Chunk(Arrays.asList(printData)));
         } catch (Exception e) {
             // ファイル書込みエラー（100:異常終了）
             LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(), e);

@@ -18,9 +18,11 @@ package jp.co.ntt.atrs.batch.jbba02001;
 
 import jp.co.ntt.atrs.batch.common.exception.AtrsBatchException;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
+import jp.co.ntt.atrs.batch.common.mapstruct.FlightDtoMapper;
+import jp.co.ntt.atrs.batch.common.mapstruct.PassengerDtoMapper;
+import jp.co.ntt.atrs.batch.common.mapstruct.ReserveFlightDtoMapper;
 import jp.co.ntt.atrs.batch.jbba00.FlightDto;
 
-import com.github.dozermapper.core.Mapper;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamWriter;
 import org.springframework.batch.item.validator.ValidationException;
@@ -50,7 +53,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * 不要なフライト情報をフライト情報バックアップファイルに出力し、DBの不要なフライト情報を削除する。
@@ -114,10 +117,22 @@ public class JBBA02001Tasklet implements Tasklet {
     JBBA02001Dao dao;
 
     /**
-     * Beanマッパー。
+     * FlightDto変換用Beanマッパー。
      */
     @Inject
-    Mapper beanMapper;
+    FlightDtoMapper flightDtoMapper;
+
+    /**
+     * PassengerDto変換用Beanマッパー。
+     */
+    @Inject
+    PassengerDtoMapper passengerDtoMapper;
+
+    /**
+     * ReserveFlightDto変換用Beanマッパー。
+     */
+    @Inject
+    ReserveFlightDtoMapper reserveFlightDtoMapper;
 
     /**
      * ユーザーの現在の作業ディレクトリ
@@ -269,11 +284,11 @@ public class JBBA02001Tasklet implements Tasklet {
                     throw new AtrsBatchException(e);
                 }
                 // DTOの詰め替え処理
-                FlightBackupDto printData = beanMapper.map(inputdata, FlightBackupDto.class);
+                FlightBackupDto printData = flightDtoMapper.map(inputdata);
 
                 // バックアップファイルへの書込み
                 try {
-                    flightBackupFileWriter.write(Arrays.asList(printData));
+                    flightBackupFileWriter.write(new Chunk(Arrays.asList(printData)));
                 } catch (Exception e) {
                     // ファイル書込みエラー
                     LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(fileName), e);
@@ -351,11 +366,11 @@ public class JBBA02001Tasklet implements Tasklet {
                     throw new AtrsBatchException(e);
                 }
                 // DTOの詰め替え処理
-                ReserveFlightBackupDto printData = beanMapper.map(inputdata, ReserveFlightBackupDto.class);
+                ReserveFlightBackupDto printData = reserveFlightDtoMapper.map(inputdata);
 
                 // バックアップファイルへの書込み
                 try {
-                    reserveFlightBackupFileWriter.write(Arrays.asList(printData));
+                    reserveFlightBackupFileWriter.write(new Chunk(Arrays.asList(printData)));
                 } catch (Exception e) {
                     // ファイル書込みエラー
                     LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(fileName), e);
@@ -434,11 +449,11 @@ public class JBBA02001Tasklet implements Tasklet {
                 }
 
                 // DTOの詰め替え処理
-                PassengerBackupDto printData = beanMapper.map(inputdata, PassengerBackupDto.class);
+                PassengerBackupDto printData = passengerDtoMapper.map(inputdata);
 
                 // バックアップファイルへの書込み
                 try {
-                    passengerBackupFileWriter.write(Arrays.asList(printData));
+                    passengerBackupFileWriter.write(new Chunk(Arrays.asList(printData)));
                 } catch (Exception e) {
                     // ファイル書込みエラー
                     LOGGER.error(LogMessages.E_AR_FW_L9001.getMessage(fileName), e);

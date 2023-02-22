@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.atrs.batch</groupId>
     <artifactId>atrs-batch</artifactId>
-    <version>2.3.1.RELEASE</version>
+    <version>2.4.0.RELEASE</version>
 
     <name>${project.artifactId}</name>
     <description>ATRS Batch Project using Macchinetta Batch Framework (2.x)</description>
@@ -29,30 +29,37 @@
             <name>Maven Central repository</name>
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
+
     </repositories>
 
     <properties>
         <!-- == Maven Plugin Versions == -->
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <maven-assembly-plugin.version>3.4.2</maven-assembly-plugin.version>
         <org.codehaus.mojo.sql-maven-plugin.version>1.5</org.codehaus.mojo.sql-maven-plugin.version>
 
         <!-- == Dependency Versions == -->
         <!-- == Spring Boot Dependencies == -->
-        <org.springframework.boot.version>2.6.1</org.springframework.boot.version>
+        <org.springframework.boot.version>3.0.1</org.springframework.boot.version>
 
         <!-- == TERASOLUNA Batch == -->
-        <terasoluna-batch.version>5.4.1.RELEASE</terasoluna-batch.version>
+        <terasoluna-batch.version>5.5.0.RELEASE</terasoluna-batch.version>
 
         <!-- == Joda-Time == -->
-        <joda-time.joda-time.version>2.10.12</joda-time.joda-time.version>
+        <joda-time.joda-time.version>2.12.2</joda-time.joda-time.version>
 
-        <!-- == Dozer == -->
-        <dozer.version>6.5.2</dozer.version>
+        <!-- == MapStruct == -->
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
+        <mapstruct-processor.version>1.5.3.Final</mapstruct-processor.version>
+        <lombok.version>1.18.24</lombok.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+
+        <!-- == Expression Language == -->
+        <jakarta.el.version>4.0.2</jakarta.el.version>
 
         <!-- == Project Properties == -->
-        <java-version>1.8</java-version>
+        <java-version>17</java-version>
         <db.encoding>UTF8</db.encoding>
         <db.basedir>sql/postgres</db.basedir>
         <db.url>jdbc:postgresql://127.0.0.1:5432/atrs_batch</db.url>
@@ -86,18 +93,13 @@
             </dependency>
             <!-- == End TERASOLUNA Batch -->
 
-            <!-- == Begin Dozer == -->
+            <!-- == Begin MapStruct == -->
             <dependency>
-                <groupId>com.github.dozermapper</groupId>
-                <artifactId>dozer-core</artifactId>
-                <version>${dozer.version}</version>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.github.dozermapper</groupId>
-                <artifactId>dozer-spring4</artifactId>
-                <version>${dozer.version}</version>
-            </dependency>
-            <!-- == End Dozer == -->
+            <!-- == End MapStruct == -->
 
             <!-- == Begin Joda-Time == -->
             <dependency>
@@ -106,6 +108,14 @@
                 <version>${joda-time.joda-time.version}</version>
             </dependency>
             <!-- == End Joda-Time == -->
+
+            <!-- == Begin Expression Language == -->
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.el</artifactId>
+                <version>${jakarta.el.version}</version>
+            </dependency>
+            <!-- == End Expression Language == -->
         </dependencies>
     </dependencyManagement>
 
@@ -163,26 +173,12 @@
         </dependency>
         <!-- == End Apache Commons Lang == -->
 
-        <!-- == Begin Dozer == -->
+        <!-- == Begin MapStruct == -->
         <dependency>
-            <groupId>com.github.dozermapper</groupId>
-            <artifactId>dozer-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.github.dozermapper</groupId>
-            <artifactId>dozer-spring4</artifactId>
-        </dependency>
-        <!-- == End Dozer == -->
+        <!-- == End MapStruct == -->
 
         <!-- == Begin Joda-Time == -->
         <dependency>
@@ -236,6 +232,26 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct-processor.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>${lombok-mapstruct-binding.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>-Amapstruct.defaultComponentModel=spring</arg>
+                    </compilerArgs>
                     <source>${java-version}</source>
                     <target>${java-version}</target>
                     <testSource>${java-version}</testSource>
@@ -277,7 +293,59 @@
                     <orderFile>ascending</orderFile>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/append/${profile-name}/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/append-test/${profile-name}/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-resources</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/append-test/${profile-name}/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/append/${profile-name}/resources</directory>
+            </resource>
+        </resources>
     </build>
 
     <profiles>
@@ -319,12 +387,18 @@
         </profile>
 
         <profile>
-            <id>jdk11</id>
+            <id>javaconfig</id>
             <activation>
-                <jdk>11</jdk>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <java-version>11</java-version>
+                <profile-name>javaconfig</profile-name>
+            </properties>
+        </profile>
+        <profile>
+            <id>xmlconfig</id>
+            <properties>
+                <profile-name>xmlconfig</profile-name>
             </properties>
         </profile>
     </profiles>

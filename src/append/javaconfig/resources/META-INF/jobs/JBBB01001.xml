@@ -8,11 +8,15 @@
              http://www.springframework.org/schema/batch https://www.springframework.org/schema/batch/spring-batch.xsd
              http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 
-    <import resource="classpath:META-INF/spring/job-base-context.xml" />
+    <context:property-placeholder location="classpath:i18n/application-messages.properties"
+                                  ignore-resource-not-found="false"
+                                  ignore-unresolvable="true"
+                                  order="1"/>
+
+    <bean class="jp.co.ntt.atrs.batch.config.JobBaseContextConfig" />
 
     <!-- コンポーネントスキャン設定 -->
-    <context:component-scan
-        base-package="jp.co.ntt.atrs.batch.jbbb01001,jp.co.ntt.atrs.batch.common.listener" />
+    <context:component-scan base-package="jp.co.ntt.atrs.batch.jbbb01001,jp.co.ntt.atrs.batch.common.listener,jp.co.ntt.atrs.batch.common.mapstruct" />
 
     <mybatis:scan base-package="jp.co.ntt.atrs.batch.jbbb01001"
         factory-ref="jobSqlSessionFactory" />

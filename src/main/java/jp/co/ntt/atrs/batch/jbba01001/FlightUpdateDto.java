@@ -23,10 +23,10 @@ import jp.co.ntt.atrs.batch.common.validate.HalfWidthNumber;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.batch.item.ItemCountAware;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 /**
  * フライト情報更新オブジェクト。

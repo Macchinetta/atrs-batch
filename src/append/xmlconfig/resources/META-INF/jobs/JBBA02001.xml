@@ -9,7 +9,7 @@
 
   <import resource="classpath:META-INF/spring/job-base-context.xml" />
 
-  <context:component-scan base-package="jp.co.ntt.atrs.batch.jbba02001,jp.co.ntt.atrs.batch.common.listener" />
+  <context:component-scan base-package="jp.co.ntt.atrs.batch.jbba02001,jp.co.ntt.atrs.batch.common.listener,jp.co.ntt.atrs.batch.common.mapstruct" />
 
   <!-- DAO設定 -->
   <bean id="JBBA02001Dao" class="org.mybatis.spring.mapper.MapperFactoryBean">

@@ -19,10 +19,10 @@ package jp.co.ntt.atrs.batch.jbbb01001;
 import jp.co.ntt.atrs.batch.common.constant.Constant;
 import jp.co.ntt.atrs.batch.common.exception.AtrsBatchException;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
+import jp.co.ntt.atrs.batch.common.mapstruct.ReservationResultDtoMapper;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodUtil;
 
-import com.github.dozermapper.core.Mapper;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamWriter;
@@ -56,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * 予約情報を集計し、予約集計情報をCSVファイルに出力する。
@@ -96,10 +97,10 @@ public class JBBB01001Tasklet implements Tasklet {
     MessageSource messageSource;
 
     /**
-     * Beanマッパー。
+     * ReservationResultDto変換用Beanマッパー。
      */
     @Inject
-    Mapper beanMapper;
+    ReservationResultDtoMapper reservationResultDtoMapper;
 
     /**
      * ジョブパラメータ 集計開始日。
@@ -221,7 +222,7 @@ public class JBBB01001Tasklet implements Tasklet {
             }
 
             // DTOの詰め替え処理
-            ReservationDto printData = beanMapper.map(inputData, ReservationDto.class);
+            ReservationDto printData = reservationResultDtoMapper.map(inputData);
 
             items.add(printData);
 
@@ -242,7 +243,7 @@ public class JBBB01001Tasklet implements Tasklet {
                     reservationWriter.open(executionContext);
 
                     // 書き込み
-                    reservationWriter.write(items);
+                    reservationWriter.write(new Chunk(items));
                     items.clear();
 
                     // 各ファイルの出力件数を保持する

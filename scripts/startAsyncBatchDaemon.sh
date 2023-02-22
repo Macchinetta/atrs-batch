@@ -8,5 +8,5 @@ source ./scripts/env/classpath.sh
 
 rm -f ${BATCH_TERMINATE_FILE}
 
-java -cp "${CLASSPATH}" org.terasoluna.batch.async.db.AsyncBatchDaemon
+java -cp "${CLASSPATH}" org.terasoluna.batch.async.db.AsyncBatchDaemon jp.co.ntt.atrs.batch.config.AsyncBatchDaemonConfig
 exit $?

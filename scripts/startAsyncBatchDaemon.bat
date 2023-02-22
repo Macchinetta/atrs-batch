@@ -7,6 +7,6 @@ CALL scripts\env\classpath.bat
 
 DEL /Q %BATCH_TERMINATE_FILE%
 
-java org.terasoluna.batch.async.db.AsyncBatchDaemon
+java org.terasoluna.batch.async.db.AsyncBatchDaemon jp.co.ntt.atrs.batch.config.AsyncBatchDaemonConfig
 
 pause

@@ -24,8 +24,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * 運賃種別搭乗者情報集計結果オブジェクト。
