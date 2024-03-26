@@ -49,6 +49,7 @@ import java.math.RoundingMode;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Locale;
 
 import jakarta.inject.Inject;
 
@@ -259,8 +260,8 @@ public class JBBB01002Tasklet implements Tasklet {
             // FieldErrorsの個数分、以下の処理を繰り返す
             for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
                 // 入力チェックエラーメッセージを出力
-                LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
-                        + "]" + "(" + inputData.toString() + ")");
+                LOGGER.warn("{}[{}]({})", messageSource.getMessage(fieldError, Locale.getDefault()),
+                        fieldError.getRejectedValue(), inputData);
             }
             // 入力チェックエラー（100:異常終了）
             LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);

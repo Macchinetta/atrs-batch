@@ -54,6 +54,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -292,8 +293,8 @@ public class JBBB01001Tasklet implements Tasklet {
             // FieldErrorsの個数分、以下の処理を繰り返す
             for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
                 // 入力チェックエラーメッセージを出力
-                LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
-                        + "]" + "(" + inputData.toString() + ")");
+                LOGGER.warn("{}[{}]({})", messageSource.getMessage(fieldError, Locale.getDefault()),
+                        fieldError.getRejectedValue(), inputData);
             }
 
             // 入力チェックエラー（100:異常終了）

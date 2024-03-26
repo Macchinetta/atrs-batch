@@ -44,6 +44,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -157,6 +158,8 @@ public class JBBA02001Tasklet implements Tasklet {
      */
     @Value("${path.PassengerBackup}")
     private String PATH_PASSENGER_BACKUP;
+    
+    private static final String LOG_FORMAT = "{}[{}]({})";
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -276,8 +279,8 @@ public class JBBA02001Tasklet implements Tasklet {
                     // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
                         // 入力チェックエラーメッセージを出力
-                        LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
-                                + "]" + "(" + inputdata.toString() + ")");
+                        LOGGER.warn(LOG_FORMAT, messageSource.getMessage(fieldError, Locale.getDefault()),
+                                fieldError.getRejectedValue(), inputdata);
                     }
                     // 入力チェックエラー
                     LOGGER.error(LogMessages.E_AR_FW_L9003.getMessage(), e);
@@ -357,8 +360,8 @@ public class JBBA02001Tasklet implements Tasklet {
                     // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
                         // 入力チェックエラーメッセージを出力
-                        LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
-                                + "]" + "(" + inputdata.toString() + ")");
+                        LOGGER.warn(LOG_FORMAT, messageSource.getMessage(fieldError, Locale.getDefault()),
+                                fieldError.getRejectedValue(), inputdata);
                     }
 
                     // 入力チェックエラー
@@ -439,8 +442,8 @@ public class JBBA02001Tasklet implements Tasklet {
                     // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
                         // 入力チェックエラーメッセージを出力
-                        LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
-                                + "]" + "(" + inputdata.toString() + ")");
+                        LOGGER.warn(LOG_FORMAT, messageSource.getMessage(fieldError, Locale.getDefault()),
+                                fieldError.getRejectedValue(), inputdata);
                     }
 
                     // 入力チェックエラー

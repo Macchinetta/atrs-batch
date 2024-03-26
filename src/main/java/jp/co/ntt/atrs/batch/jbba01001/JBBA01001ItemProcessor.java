@@ -18,6 +18,8 @@ package jp.co.ntt.atrs.batch.jbba01001;
 
 import jakarta.inject.Inject;
 
+import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -72,9 +74,8 @@ public class JBBA01001ItemProcessor implements
             for (FieldError fieldError : ((BindException) e.getCause())
                     .getFieldErrors()) {
                 // 入力チェックエラーメッセージを出力
-                LOGGER.warn(messageSource.getMessage(fieldError, null) + "["
-                        + fieldError.getRejectedValue() + "]" + "("
-                        + item.getCount() + ")");
+                LOGGER.warn("{}[{}]({})", messageSource.getMessage(fieldError, Locale.getDefault()),
+                        fieldError.getRejectedValue(), item.getCount());
             }
 
             // 入力チェックエラー

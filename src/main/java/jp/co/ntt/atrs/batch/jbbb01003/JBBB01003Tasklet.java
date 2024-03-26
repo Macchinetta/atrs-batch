@@ -45,6 +45,7 @@ import org.springframework.batch.item.validator.Validator;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import jakarta.inject.Inject;
 
@@ -154,8 +155,8 @@ public class JBBB01003Tasklet implements Tasklet {
                     // FieldErrorsの個数分、以下の処理を繰り返す
                     for (FieldError fieldError : ((BindException) e.getCause()).getFieldErrors()) {
                         // 入力チェックエラーメッセージを出力
-                        LOGGER.warn(messageSource.getMessage(fieldError, null) + "[" + fieldError.getRejectedValue()
-                                + "]" + "(" + inputData.toString() + ")");
+                        LOGGER.warn("{}[{}]({})", messageSource.getMessage(fieldError, Locale.getDefault()),
+                                fieldError.getRejectedValue(), inputData);
                     }
 
                     // 入力チェックエラー（100:異常終了）
