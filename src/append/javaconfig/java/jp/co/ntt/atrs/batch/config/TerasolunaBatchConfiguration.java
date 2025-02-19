@@ -18,6 +18,9 @@ package jp.co.ntt.atrs.batch.config;
 import org.springframework.batch.core.configuration.BatchConfigurationException;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.explore.JobExplorer;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.JobOperatorFactoryBean;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
@@ -123,14 +126,13 @@ public class TerasolunaBatchConfiguration extends DefaultBatchConfiguration {
     // Bean定義をオーバーライドして「JobParametersConverterImpl」に修正
     @Override
     @Bean
-    public JobOperator jobOperator() throws BatchConfigurationException {
+    public JobOperator jobOperator(JobRepository jobRepository, JobExplorer jobExplorer, JobRegistry jobRegistry, JobLauncher jobLauncher) throws BatchConfigurationException {
         JobOperatorFactoryBean jobOperatorFactoryBean = new JobOperatorFactoryBean();
-        jobOperatorFactoryBean.setTransactionManager(
-                getTransactionManager());  // adminTransactionManagerを取得、設定
-        jobOperatorFactoryBean.setJobRepository(jobRepository());
-        jobOperatorFactoryBean.setJobExplorer(jobExplorer());
-        jobOperatorFactoryBean.setJobRegistry(jobRegistry());
-        jobOperatorFactoryBean.setJobLauncher(jobLauncher());
+        jobOperatorFactoryBean.setTransactionManager(this.getTransactionManager());
+        jobOperatorFactoryBean.setJobRepository(jobRepository);
+        jobOperatorFactoryBean.setJobExplorer(jobExplorer);
+        jobOperatorFactoryBean.setJobRegistry(jobRegistry);
+        jobOperatorFactoryBean.setJobLauncher(jobLauncher);
         JobParametersConverterImpl jobParametersConverter = new JobParametersConverterImpl(
                 getDataSource());
         jobOperatorFactoryBean.setJobParametersConverter(

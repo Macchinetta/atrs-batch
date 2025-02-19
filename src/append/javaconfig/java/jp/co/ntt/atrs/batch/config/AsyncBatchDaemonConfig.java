@@ -31,7 +31,6 @@ import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.support.ApplicationContextFactory;
 import org.springframework.batch.core.configuration.support.AutomaticJobRegistrar;
 import org.springframework.batch.core.configuration.support.DefaultJobLoader;
-import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,11 +38,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -62,21 +57,8 @@ import jp.co.ntt.atrs.batch.config.helper.ApplicationContextFactoryHelper;
  */
 @Configuration
 @Import(LaunchContextConfig.class)
-@PropertySource(value = "classpath:batch-application.properties")
 @EnableScheduling
 public class AsyncBatchDaemonConfig {
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() throws Exception {
-        PropertySourcesPlaceholderConfigurer config = new PropertySourcesPlaceholderConfigurer();
-        config.setIgnoreResourceNotFound(false);
-        config.setIgnoreUnresolvablePlaceholders(true);
-        config.setOrder(1);
-        config.setLocations(ResourcePatternUtils.getResourcePatternResolver(
-                new DefaultResourceLoader()).getResources(
-                        "classpath*:**/*.properties"));
-        return config;
-    }
 
     @Bean
     public ThreadPoolTaskExecutor daemonTaskExecutor(
@@ -168,14 +150,6 @@ public class AsyncBatchDaemonConfig {
             final ApplicationContext ctx) throws IOException {
         return new ApplicationContextFactoryHelper(ctx).load(
                 "classpath:jp/co/ntt/atrs/batch/jobs/*.class");
-    }
-
-    @Bean
-    public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(
-            JobRegistry jobRegistry) {
-        final JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor = new JobRegistryBeanPostProcessor();
-        jobRegistryBeanPostProcessor.setJobRegistry(jobRegistry);
-        return jobRegistryBeanPostProcessor;
     }
 
     @Bean

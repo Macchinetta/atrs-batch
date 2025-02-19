@@ -28,7 +28,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.support.ExitCodeMapper;
 import org.springframework.batch.core.launch.support.SimpleJvmExitCodeMapper;
@@ -40,7 +39,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -61,7 +59,6 @@ import org.terasoluna.batch.converter.JobParametersConverterImpl;
  */
 @Configuration
 @Import(TerasolunaBatchConfiguration.class)
-@PropertySource(value = "classpath:batch-application.properties")
 public class LaunchContextConfig {
 
     @Bean
@@ -107,14 +104,6 @@ public class LaunchContextConfig {
     public JobParametersConverter jobParametersConverter(
             @Qualifier("adminDataSource") DataSource adminDataSource) {
         return new JobParametersConverterImpl(adminDataSource);
-    }
-
-    @Bean
-    public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(
-            @Qualifier("jobRegistry") JobRegistry jobRegistry) {
-        final JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor = new JobRegistryBeanPostProcessor();
-        jobRegistryBeanPostProcessor.setJobRegistry(jobRegistry);
-        return jobRegistryBeanPostProcessor;
     }
 
     @Bean
