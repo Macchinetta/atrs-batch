@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.co.ntt.atrs.batch</groupId>
     <artifactId>atrs-batch</artifactId>
-    <version>2.6.0.RELEASE</version>
+    <version>2.6.1.RELEASE</version>
 
     <name>${project.artifactId}</name>
     <description>ATRS Batch Project using Macchinetta Batch Framework (2.x)</description>
@@ -41,19 +41,6 @@
             <id>terasoluna-batch-snapshots</id>
             <url>http://repo.terasoluna.org/nexus/content/repositories/terasoluna-batch-snapshots/</url>
         </repository>
-
-        <repository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-            <id>oss.sonatype.org</id>
-            <name>terasoluna-dependencies-snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
     </repositories>
 
     <properties>
@@ -69,11 +56,8 @@
 
         <!-- == Dependency Versions == -->
         <!-- == TERASOLUNA Batch == -->
-        <terasoluna-batch.version>5.7.0.RELEASE</terasoluna-batch.version>
-        <terasoluna.gfw.bom.version>2.0.0.RELEASE</terasoluna.gfw.bom.version>
-
-        <!-- == joda-time == -->
-        <joda-time.version>2.13.0</joda-time.version>
+        <terasoluna-batch.version>5.7.1.RELEASE</terasoluna-batch.version>
+        <terasoluna.gfw.bom.version>2.0.1.RELEASE</terasoluna.gfw.bom.version>
 
         <!-- == Project Properties == -->
         <java-version>17</java-version>
@@ -108,14 +92,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- == Begin Joda-Time == -->
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>${joda-time.version}</version>
-            </dependency>
-            <!-- == End Joda-Time == -->
         </dependencies>
     </dependencyManagement>
 
@@ -179,13 +155,6 @@
             <artifactId>mapstruct</artifactId>
         </dependency>
         <!-- == End MapStruct == -->
-
-        <!-- == Begin Joda-Time == -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-        <!-- == End Joda-Time == -->
 
         <!-- == Begin slf4j-api == -->
         <dependency>

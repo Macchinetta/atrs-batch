@@ -23,7 +23,7 @@ import jp.co.ntt.atrs.batch.common.validate.HalfWidthNumber;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,7 +39,7 @@ public class ReservationResultDto {
      * 予約日時。
      */
     @NotNull
-    private Date reserveDate;
+    private LocalDate reserveDate;
 
     /**
      * 予約番号。
@@ -61,7 +61,7 @@ public class ReservationResultDto {
      * 搭乗日。
      */
     @NotNull
-    private Date departureDate;
+    private LocalDate departureDate;
 
     /**
      * 運賃種別名。
@@ -111,7 +111,7 @@ public class ReservationResultDto {
      * 
      * @return 予約日付
      */
-    public Date getReserveDate() {
+    public LocalDate getReserveDate() {
         return reserveDate;
     }
 
@@ -120,7 +120,7 @@ public class ReservationResultDto {
      * 
      * @param reserveDate 予約日付
      */
-    public void setReserveDate(Date reserveDate) {
+    public void setReserveDate(LocalDate reserveDate) {
         this.reserveDate = reserveDate;
     }
 
@@ -165,7 +165,7 @@ public class ReservationResultDto {
      * 
      * @return 搭乗日
      */
-    public Date getDepartureDate() {
+    public LocalDate getDepartureDate() {
         return departureDate;
     }
 
@@ -174,7 +174,7 @@ public class ReservationResultDto {
      * 
      * @param departureDate 搭乗日
      */
-    public void setDepartureDate(Date departureDate) {
+    public void setDepartureDate(LocalDate departureDate) {
         this.departureDate = departureDate;
     }
 

@@ -23,7 +23,6 @@ import jp.co.ntt.atrs.batch.common.mapstruct.ReservationResultDtoMapper;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodUtil;
 
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -51,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -233,8 +233,8 @@ public class JBBB01001Tasklet implements Tasklet {
             // 対象レコード処理後にコントロールブレイクを実施する
             if (isBreakByReserveDate(nextData, inputData)) {
                 // コントロールブレイクした値を取得し、出力ファイルネーム用に文字列変換する
-                LocalDate ld = new LocalDate(inputData.getReserveDate());
-                String outputDate = ld.toString("yyyyMMdd");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                String outputDate = inputData.getReserveDate().format(formatter);
 
                 // 出力ファイルパス
                 String outputFilePath = MessageFormat.format(outputFile.toString(), outputDate);

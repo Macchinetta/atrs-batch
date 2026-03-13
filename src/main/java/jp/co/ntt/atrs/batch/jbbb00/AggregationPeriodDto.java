@@ -19,7 +19,7 @@ package jp.co.ntt.atrs.batch.jbbb00;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * 集計期間。
@@ -31,12 +31,12 @@ public class AggregationPeriodDto {
     /**
      * 集計開始日。
      */
-    private Date firstDate;
+    private LocalDate firstDate;
 
     /**
      * 集計終了日。
      */
-    private Date lastDate;
+    private LocalDate lastDate;
 
     /**
      * コンストラクタ。
@@ -44,7 +44,7 @@ public class AggregationPeriodDto {
      * @param firstDate 集計開始日
      * @param lastDate 集計終了日
      */
-    AggregationPeriodDto(Date firstDate, Date lastDate) {
+    AggregationPeriodDto(LocalDate firstDate, LocalDate lastDate) {
         this.firstDate = firstDate;
         this.lastDate = lastDate;
     }
@@ -54,7 +54,7 @@ public class AggregationPeriodDto {
      * 
      * @return 集計開始日
      */
-    public Date getFirstDate() {
+    public LocalDate getFirstDate() {
         return firstDate;
     }
 
@@ -63,7 +63,7 @@ public class AggregationPeriodDto {
      * 
      * @param firstDate 集計開始日
      */
-    public void setFirstDate(Date firstDate) {
+    public void setFirstDate(LocalDate firstDate) {
         this.firstDate = firstDate;
     }
 
@@ -72,7 +72,7 @@ public class AggregationPeriodDto {
      * 
      * @return 集計終了日
      */
-    public Date getLastDate() {
+    public LocalDate getLastDate() {
         return lastDate;
     }
 
@@ -81,7 +81,7 @@ public class AggregationPeriodDto {
      * 
      * @param lastDate 集計終了日
      */
-    public void setLastDate(Date lastDate) {
+    public void setLastDate(LocalDate lastDate) {
         this.lastDate = lastDate;
     }
 

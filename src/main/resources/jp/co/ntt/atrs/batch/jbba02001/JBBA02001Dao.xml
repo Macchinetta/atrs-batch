@@ -7,7 +7,7 @@
     <!-- データ抽出 -->
 
     <!-- 不要フライト情報を取得する -->
-    <select id="findFlightList" parameterType="Date" resultType="jp.co.ntt.atrs.batch.jbba00.FlightDto" fetchSize="200">
+    <select id="findFlightList" parameterType="java.time.LocalDate" resultType="jp.co.ntt.atrs.batch.jbba00.FlightDto" fetchSize="200">
         <![CDATA[
             SELECT
                 departure_date AS departureDate,
@@ -28,7 +28,7 @@
     </select>
 
     <!-- 不要予約フライト情報を取得する -->
-    <select id="findReserveFlightList" parameterType="Date" resultType="jp.co.ntt.atrs.batch.jbba02001.ReserveFlightDto" fetchSize="200">
+    <select id="findReserveFlightList" parameterType="java.time.LocalDate" resultType="jp.co.ntt.atrs.batch.jbba02001.ReserveFlightDto" fetchSize="200">
         <![CDATA[
             SELECT
                 reserve_flight_no AS reserveFlightNo,
@@ -48,7 +48,7 @@
     </select>
 
     <!-- 不要搭乗者情報を取得する -->
-    <select id="findPassengerList" parameterType="Date" resultType="jp.co.ntt.atrs.batch.jbba02001.PassengerDto" fetchSize="200">
+    <select id="findPassengerList" parameterType="java.time.LocalDate" resultType="jp.co.ntt.atrs.batch.jbba02001.PassengerDto" fetchSize="200">
         <![CDATA[
             SELECT
                 passenger_no AS passengerNo,
@@ -72,7 +72,7 @@
 
     <!-- データ削除 -->
     <!-- 不要フライト情報を削除する -->
-    <delete id="deleteFlight" parameterType="Date">
+    <delete id="deleteFlight" parameterType="java.time.LocalDate">
         <![CDATA[
             DELETE
             FROM
@@ -83,7 +83,7 @@
     </delete>
 
     <!-- 不要予約フライト情報を削除する -->
-    <delete id="deleteReserveFlight" parameterType="Date">
+    <delete id="deleteReserveFlight" parameterType="java.time.LocalDate">
         <![CDATA[
             DELETE
             FROM
@@ -94,7 +94,7 @@
     </delete>
 
     <!-- 不要予約フライト情報を削除する -->
-    <delete id="deletePassenger" parameterType="Date">
+    <delete id="deletePassenger" parameterType="java.time.LocalDate">
         <![CDATA[
             DELETE
             FROM

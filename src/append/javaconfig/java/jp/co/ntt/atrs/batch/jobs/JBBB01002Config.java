@@ -16,7 +16,7 @@
 package jp.co.ntt.atrs.batch.jobs;
 
 import java.io.File;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,8 +92,8 @@ public class JBBB01002Config {
     @Bean
     @StepScope
     public MyBatisCursorItemReader<RouteAggregationResultDto> delegateReader(
-            @Value("#{stepExecutionContext['firstDate']}") Date firstDate,
-            @Value("#{stepExecutionContext['lastDate']}") Date lastDate,
+            @Value("#{stepExecutionContext['firstDate']}") LocalDate firstDate,
+            @Value("#{stepExecutionContext['lastDate']}") LocalDate lastDate,
             @Qualifier("jobSqlSessionFactory") SqlSessionFactory jobSqlSessionFactory) {
         Map<String, Object> parameterValues = new HashMap<>();
         parameterValues.put("firstDate", firstDate);

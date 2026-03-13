@@ -23,7 +23,6 @@ import jp.co.ntt.atrs.batch.common.mapstruct.PassengerDtoMapper;
 import jp.co.ntt.atrs.batch.common.mapstruct.ReserveFlightDtoMapper;
 import jp.co.ntt.atrs.batch.jbba00.FlightDto;
 
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -43,11 +42,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -165,15 +164,14 @@ public class JBBA02001Tasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         // システム日時を取得し、日を"01"、時間を"00:00:00"に変更した日時をバッチ処理日時として保持
-        final Calendar calendar = Calendar.getInstance();
-        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 1, 0, 0, 0);
+        LocalDate batchDate = LocalDate.now().withDayOfMonth(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
 
         // 退避を実施した年月
-        final String fileYYYYMM = new LocalDate(calendar.getTime()).toString("yyyyMM");
+        final String fileYYYYMM = batchDate.format(formatter);
 
         // バッチ処理日時から1か月さかのぼった日時を退避処理日時として保持
-        calendar.add(Calendar.MONTH, -1);
-        final Date paramDate = calendar.getTime();
+        LocalDate paramDate = batchDate.minusMonths(1);
 
         // バックアップファイルのパスを取得
         Path flightBackupFile = Paths.get(userDir, PATH_FLIGHT_BACKUP);
@@ -258,7 +256,7 @@ public class JBBA02001Tasklet implements Tasklet {
      * @return バックアップ件数
      * @throws AtrsBatchException
      */
-    private int backupFlightDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
+    private int backupFlightDb(LocalDate paramDate, String fileName, String newFileName, ChunkContext chunkContext)
             throws AtrsBatchException {
 
         int cnt = 0;
@@ -339,7 +337,7 @@ public class JBBA02001Tasklet implements Tasklet {
      * @return バックアップ件数
      * @throws AtrsBatchException
      */
-    private int backupReserveFlightDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
+    private int backupReserveFlightDb(LocalDate paramDate, String fileName, String newFileName, ChunkContext chunkContext)
             throws AtrsBatchException {
 
         int cnt = 0;
@@ -421,7 +419,7 @@ public class JBBA02001Tasklet implements Tasklet {
      * @return バックアップ件数
      * @throws AtrsBatchException
      */
-    private int backupPassengerDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
+    private int backupPassengerDb(LocalDate paramDate, String fileName, String newFileName, ChunkContext chunkContext)
             throws AtrsBatchException {
 
         int cnt = 0;

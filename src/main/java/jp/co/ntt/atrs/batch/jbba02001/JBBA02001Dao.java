@@ -18,7 +18,7 @@ package jp.co.ntt.atrs.batch.jbba02001;
 
 import jp.co.ntt.atrs.batch.jbba00.FlightDto;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -33,21 +33,21 @@ public interface JBBA02001Dao {
      * 
      * @param object パラメータ
      */
-    List<FlightDto> findFlightList(Date date);
+    List<FlightDto> findFlightList(LocalDate date);
 
     /**
      * 不要予約フライト情報を取得する。
      * 
      * @param object パラメータ
      */
-    List<ReserveFlightDto> findReserveFlightList(Date date);
+    List<ReserveFlightDto> findReserveFlightList(LocalDate date);
 
     /**
      * 不要搭乗者情報を取得する。
      * 
      * @param object パラメータ
      */
-    List<PassengerDto> findPassengerList(Date date);
+    List<PassengerDto> findPassengerList(LocalDate date);
 
     /**
      * 不要フライト情報を削除する。
@@ -55,7 +55,7 @@ public interface JBBA02001Dao {
      * @param date 削除条件の退避処理日時
      * @return 削除件数
      */
-    int deleteFlight(Date date);
+    int deleteFlight(LocalDate date);
 
     /**
      * 不要予約フライト情報を削除する。
@@ -63,7 +63,7 @@ public interface JBBA02001Dao {
      * @param date 削除条件の退避処理日時
      * @return 削除件数
      */
-    int deleteReserveFlight(Date date);
+    int deleteReserveFlight(LocalDate date);
 
     /**
      * 不要搭乗者情報を削除する。
@@ -71,6 +71,6 @@ public interface JBBA02001Dao {
      * @param date 削除条件の退避処理日時
      * @return 削除件数
      */
-    int deletePassenger(Date date);
+    int deletePassenger(LocalDate date);
 
 }

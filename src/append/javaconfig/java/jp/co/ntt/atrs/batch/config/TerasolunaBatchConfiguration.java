@@ -101,7 +101,6 @@ public class TerasolunaBatchConfiguration extends DefaultBatchConfiguration {
         jobRepositoryFactoryBean.setSerializer(getExecutionContextSerializer());
         jobRepositoryFactoryBean.setConversionService(getConversionService());
         jobRepositoryFactoryBean.setJdbcOperations(getJdbcOperations());
-        jobRepositoryFactoryBean.setLobHandler(getLobHandler());
         jobRepositoryFactoryBean.setCharset(getCharset());
         jobRepositoryFactoryBean.setMaxVarCharLength(getMaxVarCharLength());
         jobRepositoryFactoryBean.setIsolationLevelForCreateEnum(

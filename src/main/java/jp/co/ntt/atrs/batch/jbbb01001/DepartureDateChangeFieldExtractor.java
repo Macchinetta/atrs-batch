@@ -16,18 +16,17 @@
  */
 package jp.co.ntt.atrs.batch.jbbb01001;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.stereotype.Component;
+
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class DepartureDateChangeFieldExtractor implements FieldExtractor<ReservationDto> {
     @Override
     public Object[] extract(ReservationDto item) {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         Object[] values = { item.getReserveNo(),
                 item.getFlightName(),
